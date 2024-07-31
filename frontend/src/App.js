@@ -1,23 +1,31 @@
 import logo from './logo.svg';
 import './App.css';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Reactttt
-        </a>
-      </header>
+      <Box
+        component="form"
+        noValidate
+        autoComplete="off"
+        sx={{
+          width: "100%",
+          border: "solid, 1px, red"
+        }}
+      >
+        <TextField
+          id="outlined-basic"
+          label="Outlined"
+          variant="outlined"
+          sx={{
+            border: "solid, 10px, green "
+          }}
+        />
+        <TextField id="filled-basic" label="Filled" variant="filled" />
+        <TextField id="standard-basic" label="Standard" variant="standard" />
+      </Box>
     </div>
   );
 }
