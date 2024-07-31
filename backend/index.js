@@ -1,11 +1,12 @@
 const express = require('express');
 require('dotenv').config();
+const userRoutes = require('./routes/UserRoute');
 
 const app = express();
 
 const port = process.env.BACKEND_PORT;
 
-
+app.use('/users', userRoutes);
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
