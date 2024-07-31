@@ -1,9 +1,13 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import Navbar from './components/common/Navbar';
 
 function App() {
   return (
     <div className="App">
+      <Navbar
+      links={[1,2,3]}
+      />
       <Box
         component="form"
         noValidate
