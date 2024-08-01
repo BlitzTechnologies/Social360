@@ -39,7 +39,7 @@ function Navbar(props) {
         <AppBar 
             position="static"
             sx={{
-                backgroundColor: "darkblue"
+                backgroundColor: "black"
             }}
         >
             <Container maxWidth="xl">

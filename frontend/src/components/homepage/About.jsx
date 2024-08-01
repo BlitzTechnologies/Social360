@@ -11,13 +11,12 @@ function About() {
         >
             <Box
                 sx={{
-
                     width: "50%",
                     textAlign: "center"
                 }}
             >
                 Welcome to Social360
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.s quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolores suscipit maiores quia. Dolorum necessitatibus quisquam praesentium veritatis sint laborum repudiandae impedit obcaecati non distinctio! Eligendi sequi voluptas voluptatem ex.
             </Box>
         </Box>
     );
