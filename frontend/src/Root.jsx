@@ -11,6 +11,7 @@ function Root() {
             <Box
                 sx={{
                     minHeight: "86vh",
+                    fontFamily: "Poppins"
                 }}
             >
                 <Outlet

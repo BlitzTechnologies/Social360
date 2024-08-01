@@ -15,9 +15,11 @@ function RoomMenu({ onCreateClick, onJoinClick }) {
                         fontSize: '1rem',  
                         padding: "12px 24px", 
                         width: "15rem",
+                        fontFamily: "Poppins",
                         '&:hover': {
                             backgroundColor: '#ff5722', 
-                            transition: 'background-color 0.3s ease-in-out'
+                            transition: 'background-color 0.3s ease-in-out',
+                        
                         }
                     }}
                 >
@@ -35,6 +37,7 @@ function RoomMenu({ onCreateClick, onJoinClick }) {
                         fontSize: '1rem',
                         padding: "12px 24px",  
                         width: "15rem",
+                        fontFamily: "Poppins",
                         '&:hover': {
                             backgroundColor: '#1565c0',  
                             transition: 'background-color 0.3s ease-in-out'

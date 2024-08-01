@@ -41,7 +41,7 @@ function VideoChat() {
             <Box
                 sx={{
                     width: {
-                        xs: '100%',   // 100% width on extra small screens
+                        xs: '90%',   // 100% width on extra small screens
                         sm: '75%',    // 75% width on small screens
                         md: '60%',    // 60% width on medium screens
                         lg: '50%'     // 50% width on large screens
