@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import { Grid } from '@mui/material';
 
 function Welcome() {
     return (
@@ -6,20 +7,29 @@ function Welcome() {
             sx={{
                 width: "100%",
                 display: "flex",
-                justifyContent: "center"
+                justifyContent: "center",
+                fontFamily: "Poppins",
+                flexDirection: "column",
             }}
         >
             <Box
                 sx={{
-                    width: "50%",
                     textAlign: "center",
-                    fontFamily: "Poppins",
-                    fontSize: "3vw",
+                    fontSize: "2vw",
                     marginTop:"1rem"
                 }}
             >
                 Welcome to Social360
             </Box>
+            <Box
+                sx={{
+                    textAlign: "center",
+                    fontSize: "1vw"
+                }}
+            >
+                Let's get started!
+            </Box>
+
         </Box>
     );
 }
