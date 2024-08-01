@@ -39,7 +39,7 @@ function Navbar(props) {
         <AppBar 
             position="static"
             sx={{
-                backgroundColor: "black"
+                backgroundColor: "#55c57a"
             }}
         >
             <Container maxWidth="xl">
@@ -53,7 +53,7 @@ function Navbar(props) {
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
+                            fontFamily: 'Poppins',
                             fontWeight: 700,
                             letterSpacing: '.3rem',
                             color: 'inherit',
@@ -89,12 +89,12 @@ function Navbar(props) {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                             sx={{
-                                display: { xs: 'block', md: 'none' },
+                                display: { xs: 'block', md: 'none'},
                             }}
                         >
                             {pages.map((page) => (
                                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">{page}</Typography>
+                                    <Typography textAlign="center" fontFamily={"Poppins"}>{page}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
@@ -109,21 +109,21 @@ function Navbar(props) {
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },
                             flexGrow: 1,
-                            fontFamily: 'monospace',
+                            fontFamily: 'Poppins',
                             fontWeight: 700,
                             letterSpacing: '.3rem',
                             color: 'inherit',
                             textDecoration: 'none',
                         }}
                     >
-                        LOGO
+                        SOCIAL360
                     </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex'} }}>
                         {pages.map((page) => (
                             <Button
                                 key={page}
                                 onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{ my: 2, color: 'white', display: 'block', fontFamily:"Poppins" }}
                             >
                                 {page}
                             </Button>
