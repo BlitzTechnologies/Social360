@@ -6,7 +6,7 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 
 function Footer() {
   return (
-    <AppBar position="static" component="footer" sx={{ backgroundColor: "#55c57a", py: 1 }}>
+    <AppBar position="static" component="footer" sx={{ backgroundColor: "#ffbf00", py: 1 }}>
       <CssBaseline />
       <Toolbar sx={{ flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ justifyContent: 'space-between', width: '100%' }}>

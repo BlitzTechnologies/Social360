@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Paper, Typography, Grid, List, ListItem, ListItemIcon, ListItemText, IconButton, InputAdornment } from '@mui/material';
+import { Box, TextField, Button, Paper, Typography, Grid, List, ListItem, ListItemIcon, ListItemText, IconButton, InputAdornment, Divider } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorIcon from '@mui/icons-material/Error';
 import registerImage from '../images/register-image.jpg';
@@ -80,7 +80,7 @@ function RegisterForm() {
     ];
 
     return (
-        <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ display: 'flex', marginTop: '3rem', marginBottom:'3rem', alignItems: 'center', justifyContent: 'center' }}>
             <Paper elevation={6}
                 sx={{
                     display: 'flex',
@@ -102,7 +102,22 @@ function RegisterForm() {
                         alignItems: 'center'
                     }} />
                     <Grid item xs={12} md={6} sx={{ padding: 3 }}>
-                        <Typography variant="h4" sx={{ mb: 2, fontFamily: 'Poppins' }}>Register</Typography>
+                        <Typography variant="h4"
+                            sx={{
+                                mb: 2,
+                                fontFamily: 'Poppins',
+                                textAlign: 'center'
+                            }}>
+                            Register
+                        </Typography>
+                        <Divider />
+                        <Typography variant="h6"
+                            sx={{
+                                textAlign: 'center',
+                                color: '#cc9900'
+                            }}>
+                            Start socialising today
+                        </Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                             {Object.keys(formData).map(key => (
                                 <TextField
@@ -113,7 +128,6 @@ function RegisterForm() {
                                     id={key}
                                     label={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim()}
                                     name={key}
-                                    // type={key.toLowerCase().includes("password") ? "password" : "text"}
                                     type={(key === "password" && !showPassword) || (key === "confirmPassword" && !showConfirmPassword) ? "password" : "text"}
                                     value={formData[key]}
                                     onChange={handleChange}
@@ -143,7 +157,7 @@ function RegisterForm() {
 
                                         '& .MuiOutlinedInput-root': {
                                             '& fieldset': {
-                                                borderColor: '#55c57a',
+                                                borderColor: '#ffbf00',
                                             },
                                         }
                                     }}
@@ -179,9 +193,9 @@ function RegisterForm() {
                                 sx={{
                                     mt: 3,
                                     mb: 2,
-                                    backgroundColor: '#00e676',
+                                    backgroundColor: '#e6ac00',
                                     '&:hover': {
-                                        backgroundColor: '#55c57a',
+                                        backgroundColor: '#b38600',
                                     }
                                 }}
                             >
