@@ -3,7 +3,7 @@ import Homepage from "./pages/Homepage";
 import Root from "./Root";
 import Faqpage from "./pages/Faqpage";
 import RegisterPage from "./pages/RegisterPage";
-
+import LoginPage from "./pages/LoginPage"
 const router = createBrowserRouter([
     {
       path: "/",
@@ -20,6 +20,10 @@ const router = createBrowserRouter([
         {
           path: "Register",
           element: <RegisterPage />,
+        },
+        {
+          path: "Login",
+          element: <LoginPage />,
         },
       ],
     },

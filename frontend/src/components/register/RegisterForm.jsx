@@ -80,7 +80,14 @@ function RegisterForm() {
     ];
 
     return (
-        <Box sx={{ display: 'flex', marginTop: '3rem', marginBottom:'3rem', alignItems: 'center', justifyContent: 'center' }}>
+        <Box
+            sx={{
+                display: 'flex',
+                marginTop: '3rem',
+                marginBottom: '3rem',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
             <Paper elevation={6}
                 sx={{
                     display: 'flex',
