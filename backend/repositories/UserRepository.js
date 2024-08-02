@@ -1,21 +1,23 @@
+const { insertDocument } = require("../services/db");
+
 // Mock implementation for illustration
 const users = [];
 
 class UserRepository {
-  getAllUsers() {
+  async getAllUsers() {
     return users;
   }
 
-  getUserById(id) {
+  async getUserById(id) {
     return users.find(user => user.id === id);
   }
 
-  createUser(user) {
-    users.push(user);
-    return user;
+  async createUser(user) {
+    const response = await insertDocument(user, "Accounts")
+    return response;
   }
 
-  updateUser(id, updatedUser) {
+  async updateUser(id, updatedUser) {
     const index = users.findIndex(user => user.id === id);
     if (index !== -1) {
       users[index] = { ...users[index], ...updatedUser };
@@ -24,7 +26,7 @@ class UserRepository {
     return null;
   }
 
-  deleteUser(id) {
+  async deleteUser(id) {
     const index = users.findIndex(user => user.id === id);
     if (index !== -1) {
       const deletedUser = users.splice(index, 1);

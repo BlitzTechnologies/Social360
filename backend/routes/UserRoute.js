@@ -16,9 +16,15 @@ router.get('/:id', (req, res) => {
   }
 });
 
-router.post('/', (req, res) => {
-  const newUser = userRepository.createUser(req.body);
-  res.status(201).json(newUser);
+router.post('/', async (req, res) => {
+  console.log("Request Body:", req.body);
+  try {
+    const newUser = await userRepository.createUser(req.body);
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 router.put('/:id', (req, res) => {
