@@ -4,9 +4,10 @@ const userRepository = require('../repositories/UserRepository');
 const { validateRegisterUser, hashPassword } = require('../modules/accounts/UserHelper');
 const { MONGO_DB_COLLECTIONS } = require('../modules/constants');
 const { UserMapper } = require('../mappers/AccountMapper');
+const { validateToken } = require('../modules/AuthHelper');
 
 
-router.get('/', async (req, res) => {
+router.get('/', validateToken, async (req, res) => {
   const users = await userRepository.getAllUsers();
   res.json(users);
 });
