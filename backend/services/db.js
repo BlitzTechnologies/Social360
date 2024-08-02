@@ -1,4 +1,5 @@
 const { MongoClient } = require("mongodb");
+const constants = require("../modules/constants");
 require("dotenv").config();
 
 const uri = process.env.MONGO_DB_LOCAL_CONNECTION_STRING;
@@ -13,7 +14,7 @@ async function connectToDb() {
     
     try {
         await client.connect();
-        const db = client.db("social360");
+        const db = client.db(constants.MONGO_DB_NAME);
         console.log("Connected to the database");
         return db;
     } catch (error) {
@@ -27,6 +28,20 @@ async function closeDbConnection() {
         await client.close();
         client = null; 
     }
+}
+
+async function findAllDocuments(collectionName) {
+    let documents = [];
+    try {
+        const db = await connectToDb();
+        const collection = db.collection(collectionName);
+        documents = await collection.find({}).toArray(); 
+    } catch (error) {
+        console.error("Error retrieving documents from the database: ", error);
+    } finally {
+        await closeDbConnection();
+    }
+    return documents;
 }
 
 async function insertDocument(data, collectionName) {
@@ -47,6 +62,7 @@ async function insertDocument(data, collectionName) {
 
 module.exports = {
     connectToDb,
-    insertDocument,
     closeDbConnection,
+    insertDocument,
+    findAllDocuments
 };

@@ -1,11 +1,13 @@
-const { insertDocument } = require("../services/db");
+const constants = require("../modules/constants");
+const { insertDocument, findAllDocuments } = require("../services/db");
 
 // Mock implementation for illustration
 const users = [];
 
 class UserRepository {
   async getAllUsers() {
-    return users;
+    const response = await findAllDocuments(constants.MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
+    return response;
   }
 
   async getUserById(id) {
@@ -13,7 +15,7 @@ class UserRepository {
   }
 
   async createUser(user) {
-    const response = await insertDocument(user, "Accounts")
+    const response = await insertDocument(user, constants.MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
     return response;
   }
 
