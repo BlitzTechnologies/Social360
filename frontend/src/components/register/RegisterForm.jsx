@@ -1,22 +1,87 @@
-import React from 'react';
-import { Box, TextField, Button, Paper, Typography, Grid, FormControlLabel, Checkbox } from '@mui/material';
-import registerImage from '../images/register-image.jpg'
+import React, { useState } from 'react';
+import { Box, TextField, Button, Paper, Typography, Grid, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import ErrorIcon from '@mui/icons-material/Error';
+import registerImage from '../images/register-image.jpg';
+import * as yup from 'yup';
 
+// Create a schema for validation
+const schema = yup.object({
+    fullName: yup.string().required("Full name is required"),
+    email: yup.string().email("Invalid email address").required("Email is required"),
+    username: yup.string().required("Username is required"),
+    password: yup.string()
+        .required('Password is required')
+        .min(8, 'Password must be at least 8 characters long')
+        .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .matches(/[0-9]/, 'Password must contain at least one number')
+        .matches(/[\^$*.\[\]{}()?\-"!@#%&/\\,><':;|_~`]/, 'Password must contain at least one special character')
+        .notOneOf([yup.ref('username'), null], 'Password cannot contain your username'),
+    confirmPassword: yup.string()
+        .oneOf([yup.ref('password'), null], 'Passwords do not match')
+}).required();
 
 function RegisterForm() {
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            username: data.get('username'),
-            password: data.get('password'),
+    const [formData, setFormData] = useState({
+        fullName: '',
+        email: '',
+        username: '',
+        password: '',
+        confirmPassword: ''
+    });
+    const [errors, setErrors] = useState({});
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        // Validate the field on change
+        yup.reach(schema, name).validate(value).then(() => {
+            setErrors(prev => ({ ...prev, [name]: "" }));
+        }).catch(err => {
+            setErrors(prev => ({ ...prev, [name]: err.message }));
         });
     };
 
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        // Validate entire form
+        schema.validate(formData, { abortEarly: false })
+            .then(() => {
+                console.log('Valid Data:', formData);
+                setErrors({});
+                // Proceed with submission (e.g., API call)
+            })
+            .catch(err => {
+                const newErrors = err.inner.reduce((acc, curr) => {
+                    acc[curr.path] = curr.message;
+                    return acc;
+                }, {});
+                setErrors(newErrors);
+            });
+    };
+
+    const passwordValidationCriteria = [
+        { test: (pwd) => pwd.length >= 8, text: "At least 8 characters" },
+        { test: (pwd) => /[A-Z]/.test(pwd), text: "At least one uppercase letter" },
+        { test: (pwd) => /[a-z]/.test(pwd), text: "At least one lowercase letter" },
+        { test: (pwd) => /[0-9]/.test(pwd), text: "At least one number" },
+        { test: (pwd) => /[\^$*.\[\]{}()?\-"!@#%&/\\,><':;|_~`]/.test(pwd), text: "At least one special character" },
+    ];
+
     return (
         <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
-            <Paper elevation={6} sx={{ display: 'flex', width: '50%', maxHeight: '600px' }}>
+            <Paper elevation={6} 
+            sx={{ 
+                display: 'flex', 
+                width: { 
+                    xs: '90%', // On extra-small devices (mobile phones)
+                    sm: '70%', // On small devices (tablets)
+                    md: '60%', // On medium devices (small laptops)
+                    lg: '50%', // On large devices (desktops)
+                    xl: '50%'  // On extra-large devices (large screens)
+                }
+                }}>
                 <Grid container>
                     <Grid item xs={12} md={6} sx={{
                         backgroundImage: `url(${registerImage})`,
@@ -25,134 +90,65 @@ function RegisterForm() {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center'
-                    }}>
-
-                    </Grid>
+                    }} />
                     <Grid item xs={12} md={6} sx={{ padding: 3 }}>
                         <Typography variant="h4" sx={{ mb: 2, fontFamily: 'Poppins' }}>Register</Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="fullName"
-                                label="Full Name"
-                                name="fullName"
-                                autoFocus
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: '#55c57a', // Default border color
+                            {Object.keys(formData).map(key => (
+                                <TextField
+                                    key={key}
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id={key}
+                                    label={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim()}
+                                    name={key}
+                                    type={key.includes("password") ? "password" : "text"}
+                                    value={formData[key]}
+                                    onChange={handleChange}
+                                    error={!!errors[key]}
+                                    helperText={errors[key]}
+                                    autoComplete={key}
+                                    sx={{
+                                        '& .MuiInputBase-root': {
+                                            height: '35px'
                                         },
-                                        '&:hover fieldset': {
-                                            borderColor: '#69f0ae', // Border color on hover
+                                        '& .MuiFormLabel-root': {
+                                            fontSize: '0.8rem',
+                                            top: '-7px'
                                         },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: 'green', // Border color when the input is focused
-                                            borderWidth: 2, // Make the border thicker on focus
-                                        }
-                                    }
-                                }}
-                            />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="email"
-                                label="Email Address"
-                                name="email"
-                                autoComplete="email"
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: '#55c57a', // Default border color
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: '#69f0ae', // Border color on hover
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: 'green', // Border color when the input is focused
-                                            borderWidth: 2, // Make the border thicker on focus
-                                        }
-                                    }
-                                }}
 
-                            />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="username"
-                                label="Username"
-                                name="username"
-                                autoComplete="username"
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: '#55c57a', // Default border color
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: '#69f0ae', // Border color on hover
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: 'green', // Border color when the input is focused
-                                            borderWidth: 2, // Make the border thicker on focus
+                                        '& .MuiOutlinedInput-root': {
+                                            '& fieldset': {
+                                                borderColor: '#55c57a',
+                                            },
                                         }
-                                    }
-                                }}
-                            />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type="password"
-                                id="password"
-                                autoComplete="new-password"
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: '#55c57a', // Default border color
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: '#69f0ae', // Border color on hover
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: 'green', // Border color when the input is focused
-                                            borderWidth: 2, // Make the border thicker on focus
-                                        }
-                                    }
-                                }}
-                            />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="confirmPassword"
-                                label="Repeat Password"
-                                type="password"
-                                id="confirmPassword"
-                                autoComplete="new-password"
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: '#55c57a', // Default border color
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: '#69f0ae', // Border color on hover
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: 'green', // Border color when the input is focused
-                                            borderWidth: 2, // Make the border thicker on focus
-                                        }
-                                    }
-                                }}
-                            />
-                            {/* <FormControlLabel
-                                control={<Checkbox value="agree" color="primary" />}
-                                label="I agree to the Terms of Use"
-                            /> */}
+                                    }}
+                                />
+                            ))}
+                            <List dense sx={{ marginTop: -2 }}>
+                                {passwordValidationCriteria.map((criteria, index) => (
+                                    <ListItem key={index}
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            fontSize: '0.5rem',
+                                            '& .MuiTypography-root': {
+                                                fontSize: '0.7rem',
+                                                marginLeft: '-35px'
+                                            },
+                                            '& .MuiSvgIcon-root': {
+                                                fontSize: '0.7rem'
+                                            }
+                                        }}
+                                    >
+                                        <ListItemIcon>
+                                            {criteria.test(formData.password) ? <CheckIcon color="success" /> : <ErrorIcon color="error" />}
+                                        </ListItemIcon>
+                                        <ListItemText primary={criteria.text} sx={{ color: criteria.test(formData.password) ? 'green' : 'red' }} />
+                                    </ListItem>
+                                ))}
+                            </List>
                             <Button
                                 type="submit"
                                 fullWidth
@@ -162,10 +158,7 @@ function RegisterForm() {
                                     mb: 2,
                                     backgroundColor: '#00e676',
                                     '&:hover': {
-                                        backgroundColor: '#55c57a', // Change to this color on hover
-                                        // Optionally, you can also change other styles like the border
-                                        borderColor: '#64dd17', // Example of changing the border color on hover
-                                        boxShadow: '0 3px 5px 2px rgba(100, 221, 23, .3)', // Example of adding a shadow on hover
+                                        backgroundColor: '#55c57a',
                                     }
                                 }}
                             >
