@@ -1,24 +1,41 @@
 import { Outlet, ScrollRestoration } from 'react-router-dom';
 import Footer from './components/common/Footer';
 import Navbar from './components/common/Navbar';
-import { Box } from '@mui/material';
+import { Box, createTheme, ThemeProvider, CssBaseline } from '@mui/material';
+import './index.css';
 
+// Create a theme instance.
+const theme = createTheme({
+    typography: {
+        fontFamily: 'Poppins, Arial, sans-serif'
+    },
+    components: {
+        MuiCssBaseline: {
+            styleOverrides: {
+                body: {
+                    fontFamily: 'Poppins, Arial, sans-serif',
+                }
+            }
+        }
+    }
+});
 
 function Root() {
     return (
         <>
-            <Navbar />
-            <Box
-                sx={{
-                    minHeight: "86vh",
-                    fontFamily: "Poppins"
-                }}
-            >
-                <Outlet
-                />
-            </Box>
-            <Footer />
-            <ScrollRestoration />
+            <ThemeProvider theme={theme}>
+                <CssBaseline /> {/* Ensures the baseline styles are applied globally */}
+                <Navbar />
+                <Box
+                    sx={{
+                        minHeight: "86vh",
+                    }}
+                >
+                    <Outlet />
+                </Box>
+                <Footer />
+                <ScrollRestoration />
+            </ThemeProvider>
         </>
     );
 }
