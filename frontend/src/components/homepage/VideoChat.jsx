@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import RoomMenu from './RoomMenu';
-import { textAlign, width } from '@mui/system';
 import { Box } from '@mui/system';
+import { Paper } from '@mui/material';
 
 function VideoChat() {
     const videoRef = useRef(null);
@@ -41,15 +41,30 @@ function VideoChat() {
             <Box
                 sx={{
                     width: {
-                        xs: '90%',   // 100% width on extra small screens
-                        sm: '75%',    // 75% width on small screens
-                        md: '60%',    // 60% width on medium screens
-                        lg: '50%'     // 50% width on large screens
+                        xs: '90%',
+                        sm: '75%',
+                        md: '60%', 
+                        lg: '50%'
                     },
-                    maxWidth: '800px' // Maximum width of the video element
+                    maxWidth: '800px' 
                 }}
             >
-                <video ref={videoRef} autoPlay style={{ width: '100%', height: 'auto' }}/>
+            <Paper
+
+                elevation={6} 
+                sx={{
+                    width: '100%',
+                    maxWidth: '800px',
+                    height: { xs: 'calc(100vw * 9 / 16)', sm: 'calc(75vw * 9 / 16)', md: 'calc(60vw * 9 / 16)', lg: 'calc(50vw * 9 / 16)' },
+                    maxHeight: '450px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}
+            >
+                <video ref={videoRef} autoPlay style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                </Paper>
             </Box>
             <RoomMenu onCreateClick={handleCreateClick} onJoinClick={handleJoinClick} />
         </div>
