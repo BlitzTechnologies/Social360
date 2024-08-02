@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Paper, Typography, Grid, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, TextField, Button, Paper, Typography, Grid, List, ListItem, ListItemIcon, ListItemText, IconButton, InputAdornment } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorIcon from '@mui/icons-material/Error';
 import registerImage from '../images/register-image.jpg';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import * as yup from 'yup';
 
 // Create a schema for validation
@@ -31,11 +33,12 @@ function RegisterForm() {
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        // Validate the field on change
         yup.reach(schema, name).validate(value).then(() => {
             setErrors(prev => ({ ...prev, [name]: "" }));
         }).catch(err => {
@@ -43,9 +46,16 @@ function RegisterForm() {
         });
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Validate entire form
         schema.validate(formData, { abortEarly: false })
             .then(() => {
                 console.log('Valid Data:', formData);
@@ -71,16 +81,16 @@ function RegisterForm() {
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
-            <Paper elevation={6} 
-            sx={{ 
-                display: 'flex', 
-                width: { 
-                    xs: '90%', // On extra-small devices (mobile phones)
-                    sm: '70%', // On small devices (tablets)
-                    md: '60%', // On medium devices (small laptops)
-                    lg: '50%', // On large devices (desktops)
-                    xl: '50%'  // On extra-large devices (large screens)
-                }
+            <Paper elevation={6}
+                sx={{
+                    display: 'flex',
+                    width: {
+                        xs: '90%', // On extra-small devices (mobile phones)
+                        sm: '70%', // On small devices (tablets)
+                        md: '60%', // On medium devices (small laptops)
+                        lg: '50%', // On large devices (desktops)
+                        xl: '50%'  // On extra-large devices (large screens)
+                    }
                 }}>
                 <Grid container>
                     <Grid item xs={12} md={6} sx={{
@@ -103,12 +113,25 @@ function RegisterForm() {
                                     id={key}
                                     label={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim()}
                                     name={key}
-                                    type={key.includes("password") ? "password" : "text"}
+                                    // type={key.toLowerCase().includes("password") ? "password" : "text"}
+                                    type={(key === "password" && !showPassword) || (key === "confirmPassword" && !showConfirmPassword) ? "password" : "text"}
                                     value={formData[key]}
                                     onChange={handleChange}
                                     error={!!errors[key]}
                                     helperText={errors[key]}
                                     autoComplete={key}
+                                    InputProps={{
+                                        endAdornment: (key === "password" || key === "confirmPassword") ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={key === "password" ? togglePasswordVisibility : toggleConfirmPasswordVisibility}
+                                                    edge="end"
+                                                >
+                                                    {(key === "password" && showPassword) || (key === "confirmPassword" && showConfirmPassword) ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null
+                                    }}
                                     sx={{
                                         '& .MuiInputBase-root': {
                                             height: '35px'
