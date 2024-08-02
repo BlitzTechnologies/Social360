@@ -1,14 +1,22 @@
 
 const validator = require('validator');
 const bcrypt = require('bcrypt');
-const SALT_ROUNDS = 10; // Number of salt rounds
+const SALT_ROUNDS = 10; 
 
 function validateRegisterUser(request) {
-    const { username, email, password } = request;
+    const { fullName, username, email, password } = request;
     const errors = [];
+
+    if (!fullName || typeof fullName !== 'string' || username.trim().length === 0) {
+        errors.push('fullname is required and should be a non-empty string.');
+    }
 
     if (!username || typeof username !== 'string' || username.trim().length === 0) {
         errors.push('username is required and should be a non-empty string.');
+    }
+
+    if (username.trim().length < 5 || username.trim().length > 20) {
+        errors.push('username length should be between 5 and 20.');
     }
 
     if (!email || !validator.isEmail(email)) {

@@ -4,6 +4,7 @@ const userRepository = require('../repositories/UserRepository');
 const { validateRegisterUser, hashPassword } = require('../modules/accounts/userHelper');
 const { MONGO_DB_COLLECTIONS } = require('../modules/constants');
 const User = require('../models/User');
+const { UserMapper } = require('../mappers/AccountMapper');
 
 
 router.get('/', async (req, res) => {
@@ -34,7 +35,8 @@ router.post('/', async (req, res) => {
   }
   try {
     let hashedPassword = await hashPassword(reqObj.password);
-    let userModel = new User(reqObj.username, reqObj.email, hashedPassword)
+    let userModel = UserMapper.fromObject(reqObj);
+    userModel.password = hashedPassword;
     const newUser = await userRepository.createUser(userModel);
     return res.status(201).json(newUser);
   } catch (error) {
