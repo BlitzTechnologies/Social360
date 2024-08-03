@@ -11,18 +11,18 @@ function Footer() {
       <Toolbar sx={{ flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ justifyContent: 'space-between', width: '100%' }}>
           <Grid item xs={12} sm={4}>
-            <Typography variant="body1" align="center" fontFamily="Poppins">
+            <Typography variant="body1" align="center" fontFamily="Poppins" sx={{ mt: 1 }}>
               © {new Date().getFullYear()} SOCIAL360
             </Typography>
           </Grid>
           <Grid item xs={12} sm={4} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Link href="/privacy" color="inherit" underline="hover" fontFamily="Poppins" sx={{ mx: 1 }}>
+            <Link href="/privacy" color="inherit" underline="hover" fontFamily="Poppins" sx={{ mx: 1, mt: 1 }}>
               Privacy Policy
             </Link>
-            <Link href="/terms" color="inherit" underline="hover" fontFamily="Poppins" sx={{ mx: 1 }}>
+            <Link href="/terms" color="inherit" underline="hover" fontFamily="Poppins" sx={{ mx: 1, mt: 1  }}>
               Terms of Service
             </Link>
-            <Link href="/contact" color="inherit" underline="hover" fontFamily="Poppins" sx={{ mx: 1 }}>
+            <Link href="/contact" color="inherit" underline="hover" fontFamily="Poppins" sx={{ mx: 1, mt: 1  }}>
               Contact Us
             </Link>
           </Grid>

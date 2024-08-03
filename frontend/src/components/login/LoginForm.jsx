@@ -52,7 +52,7 @@ function LoginForm() {
             }}>
                 <Grid container>
                     <Grid item xs={12} md={6} sx={{
-                        backgroundImage: `url(${require('../images/register-image.jpg')})`,
+                        backgroundImage: `url(${require('../images/login-image.jpg')})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                     }}>
