@@ -28,7 +28,7 @@ function Root() {
                 <Navbar />
                 <Box
                     sx={{
-                        minHeight: "86vh",
+                        minHeight: "80vh",
                     }}
                 >
                     <Outlet />

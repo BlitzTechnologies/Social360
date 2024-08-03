@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Paper, Typography, Grid, IconButton, InputAdornment, Link } from '@mui/material';
+import { Box, TextField, Button, Paper, Typography, Grid, IconButton, InputAdornment, Link, Divider } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+
 
 function LoginForm() {
     const [formData, setFormData] = useState({
@@ -29,7 +30,6 @@ function LoginForm() {
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log('Login Data:', formData);
-        // Proceed with login logic
     };
 
     return (
@@ -37,17 +37,17 @@ function LoginForm() {
             sx={{
                 display: 'flex',
                 marginTop: '7rem',
-                marginBottom: '1rem',
+                
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
             <Paper elevation={6} sx={{
                 width: {
-                    xs: '90%', // On extra-small devices (mobile phones)
-                    sm: '70%', // On small devices (tablets)
-                    md: '60%', // On medium devices (small laptops)
-                    lg: '50%', // On large devices (desktops)
-                    xl: '50%'  // On extra-large devices (large screens)
+                    xs: '90%',
+                    sm: '70%',
+                    md: '60%',
+                    lg: '50%',
+                    xl: '50%'
                 }, display: 'flex', flexDirection: 'row'
             }}>
                 <Grid container>
@@ -56,10 +56,25 @@ function LoginForm() {
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                     }}>
-                        {/* Image is set as a background to this grid */}
                     </Grid>
                     <Grid item xs={12} md={6} sx={{ p: 3 }}>
-                        <Typography variant="h4" sx={{ mb: 4 }}>Login</Typography>
+                        <Typography variant="h4"
+                            sx={{
+                                mb: 1,
+                                textAlign: 'center'
+                            }}>
+                            Login
+                        </Typography>
+                        <Divider
+                        />
+                        <Typography variant="h6"
+                            sx={{
+                                textAlign: 'center',
+                                color: '#cc9900',
+                                mb: 3
+                            }}>
+                            Build Bridges with Every Click
+                        </Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                             <TextField
                                 label="Username"
