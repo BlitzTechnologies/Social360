@@ -59,7 +59,7 @@ function LoginForm() {
                         {/* Image is set as a background to this grid */}
                     </Grid>
                     <Grid item xs={12} md={6} sx={{ p: 3 }}>
-                        <Typography variant="h4" sx={{ mb: 2 }}>Login</Typography>
+                        <Typography variant="h4" sx={{ mb: 4 }}>Login</Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                             <TextField
                                 label="Username"
@@ -70,7 +70,7 @@ function LoginForm() {
                                 onChange={handleChange}
                                 name="username"
                                 sx={{
-
+                                    mb: 3,
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
                                             borderColor: '#ffbf00',
@@ -97,7 +97,7 @@ function LoginForm() {
                                     )
                                 }}
                                 sx={{
-
+                                    mb: 1,
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
                                             borderColor: '#ffbf00',
@@ -106,10 +106,10 @@ function LoginForm() {
                                 }}
                             />
                             <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
-                                <IconButton onClick={handleCheckboxChange} 
-                                sx={{
-                                    color: '#ffbf00'
-                                }}
+                                <IconButton onClick={handleCheckboxChange}
+                                    sx={{
+                                        color: '#ffbf00'
+                                    }}
                                 >
                                     {formData.rememberMe ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
                                 </IconButton>
@@ -132,15 +132,6 @@ function LoginForm() {
                                     color: '#b38600'
                                 }}>
                                 Forgot password?
-                            </Link>
-                            <Link href="#" variant="body2"
-                                sx={{
-                                    display: 'block',
-                                    textAlign: 'center',
-                                    mt: 1,
-                                    color: '#b38600'
-                                }}>
-                                Don't have an account? Sign up!
                             </Link>
                         </Box>
                     </Grid>
