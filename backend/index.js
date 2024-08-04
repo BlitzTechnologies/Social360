@@ -6,11 +6,12 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-  })
-);
+const corsOptions = {
+  origin: process.env.CLIENT_URL, 
+  optionsSuccessStatus: 200 
+};
+
+app.use(cors(corsOptions));
 
 const port = process.env.BACKEND_PORT;
 
