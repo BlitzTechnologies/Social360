@@ -18,7 +18,7 @@ class RoomMapper {
     // Converts a Room instance to a plain object
     static toObject(room) {
         if (!(room instanceof Room)) {
-            throw new Error('Invalid input: must be an instance of User');
+            throw new Error('Invalid input: must be an instance of Room');
         }
         return {
             code: room.code,
