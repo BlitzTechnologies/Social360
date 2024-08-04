@@ -3,6 +3,7 @@ class User {
     username;
     email;
     password;
+    role;
   }
   
   module.exports = User;
