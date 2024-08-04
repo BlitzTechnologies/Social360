@@ -22,13 +22,13 @@ router.post('/login', async (req, res) => {
     const userList = await UserRepository.getAllUsers();
     const user = userList.find(user => user.username === usernameEmail.trim() || user.email === usernameEmail.trim());
     if (!user) {
-      return res.status(400).json({ message: "username/email or password invalid" })
+      return res.status(400).json({ message: "Username/Email or password invalid" })
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "username/email or password invalid" });
+      return res.status(400).json({ message: "Username/Email or password invalid" });
     }
 
     const token = jwt.sign(

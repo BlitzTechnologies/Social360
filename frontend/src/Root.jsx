@@ -5,6 +5,7 @@ import { Box, createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import './index.css';
 import { AlertProvider } from './contexts/AlertContext';
 import AlertComponenet from './components/common/Alert';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Create a theme instance.
 const theme = createTheme({
@@ -28,17 +29,19 @@ function Root() {
             <ThemeProvider theme={theme}>
                 <CssBaseline /> {/* Ensures the baseline styles are applied globally */}
                 <AlertProvider>
-                    <Navbar />
-                    <AlertComponenet />
-                    <Box
-                        sx={{
-                            minHeight: "84vh",
-                        }}
-                    >
-                        <Outlet />
-                    </Box>
-                    <Footer />
-                    <ScrollRestoration />
+                    <AuthProvider>
+                        <Navbar />
+                        <AlertComponenet />
+                        <Box
+                            sx={{
+                                minHeight: "84vh",
+                            }}
+                        >
+                            <Outlet />
+                        </Box>
+                        <Footer />
+                        <ScrollRestoration />
+                    </AuthProvider>
                 </AlertProvider>
             </ThemeProvider>
         </>

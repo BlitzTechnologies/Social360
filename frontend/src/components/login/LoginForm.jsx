@@ -4,15 +4,18 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-
+import { useAuth } from '../../contexts/AuthContext';
 
 function LoginForm() {
+    const { loginUser } = useAuth();
+
     const [formData, setFormData] = useState({
-        username: '',
+        usernameEmail: '',
         password: '',
         rememberMe: false
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(''); // State for error message
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -29,7 +32,11 @@ function LoginForm() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log('Login Data:', formData);
+        loginUser(formData)
+            .catch((err) => {
+                const errorMessage = err.response?.data?.message || "An unexpected error occurred";
+                setErrorMessage(errorMessage); // Update error message state
+            });
     };
 
     return (
@@ -37,7 +44,6 @@ function LoginForm() {
             sx={{
                 display: 'flex',
                 marginTop: '7rem',
-                
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
@@ -65,8 +71,7 @@ function LoginForm() {
                             }}>
                             Login
                         </Typography>
-                        <Divider
-                        />
+                        <Divider />
                         <Typography variant="h6"
                             sx={{
                                 textAlign: 'center',
@@ -76,14 +81,19 @@ function LoginForm() {
                             Build Bridges with Every Click
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                            {errorMessage && (
+                                <Typography variant="body2" color="error" sx={{ mb: 2, textAlign: 'center' }}>
+                                    {errorMessage}
+                                </Typography>
+                            )}
                             <TextField
-                                label="Username"
+                                label="Username/Email"
                                 variant="outlined"
                                 fullWidth
                                 required
-                                value={formData.username}
+                                value={formData.usernameEmail}
                                 onChange={handleChange}
-                                name="username"
+                                name="usernameEmail"
                                 sx={{
                                     mb: 3,
                                     '& .MuiOutlinedInput-root': {
