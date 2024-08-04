@@ -6,6 +6,9 @@ import registerImage from '../images/register-image.jpg';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import * as yup from 'yup';
+import { register } from '../../api/user';
+import { useNavigate } from "react-router-dom"
+import { useAlert } from '../../contexts/AlertContext';
 
 // Create a schema for validation
 const schema = yup.object({
@@ -36,6 +39,9 @@ function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const navigate = useNavigate();
+    const { showAlert } = useAlert();
+
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -58,9 +64,20 @@ function RegisterForm() {
         event.preventDefault();
         schema.validate(formData, { abortEarly: false })
             .then(() => {
-                console.log('Valid Data:', formData);
                 setErrors({});
-                // Proceed with submission (e.g., API call)
+                register(formData)
+                    .then((res) => {
+                        navigate('/login');
+                        showAlert("success", "Account successfully registered.")
+                    })
+                    .catch((err) => {
+                        if (err.response.status === 400) {
+                            showAlert("error", err.response.data.message)
+                        }
+                        else {
+                            showAlert('error', 'Server error occured, please wait or contact us.')
+                        }
+                    })
             })
             .catch(err => {
                 const newErrors = err.inner.reduce((acc, curr) => {
