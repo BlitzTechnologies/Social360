@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
     const logoutUser = () => {
         setUser({ username: null, email: null });
         localStorage.clear();
-        showAlert("info", "You have been logged out.");
         navigate('/');
     };
 
