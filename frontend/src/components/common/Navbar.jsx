@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -54,10 +54,6 @@ function Navbar(props) {
         }
         setDrawerOpen(open);
     };
-
-    useEffect(() => {
-        console.log(user, isLoggedIn())
-    }, [])
 
     return (
         <AppBar
