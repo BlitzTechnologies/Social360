@@ -19,6 +19,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { Menu } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+
+
 const pages = ['Events', 'Rooms', 'Interests', 'Contact'];
 const settings = [
     { name: 'Sign in', path: '/login' },
@@ -57,8 +60,8 @@ function Navbar(props) {
                     <Typography
                         variant="h6"
                         noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
+                        component={RouterLink}
+                        href="/"
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
@@ -113,8 +116,8 @@ function Navbar(props) {
                     <Typography
                         variant="h5"
                         noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
+                        component={RouterLink}
+                        href="/"
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },

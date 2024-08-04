@@ -32,14 +32,14 @@ function RoomMenu({ onCreateClick, onJoinClick }) {
                     size='large'
                     onClick={onJoinClick}
                     sx={{
-                        backgroundColor: "blue",
+                        backgroundColor: "#1565c0",
                         color: '#ffffff', 
                         fontSize: '1rem',
                         padding: "12px 24px",  
                         width: "15rem",
                         fontFamily: "Poppins",
                         '&:hover': {
-                            backgroundColor: '#1565c0',  
+                            backgroundColor: 'blue',  
                             transition: 'background-color 0.3s ease-in-out'
                         }
                     }}
