@@ -2,11 +2,9 @@ const express = require('express');
 const router = express.Router();
 const userRepository = require('../repositories/UserRepository');
 const { validateRegisterUser, hashPassword } = require('../modules/accounts/UserHelper');
-const { MONGO_DB_COLLECTIONS } = require('../modules/constants');
 const { UserMapper } = require('../mappers/AccountMapper');
 const { validateToken } = require('../modules/AuthHelper');
 const { UserRole } = require('../models/enum');
-const yup = require("yup");
 
 
 router.get('/', async (req, res) => {
