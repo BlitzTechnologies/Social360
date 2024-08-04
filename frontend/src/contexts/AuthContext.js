@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem("username", res.user.username);
             localStorage.setItem("email", res.user.email);
             setUser({ username: res.user.username, email: res.user.email });
-            showAlert("success", `You have been logged in, welcome back ${res.user.username}`);
+            showAlert("success", `You have been logged in, welcome back ${res.user.username}!`);
             navigate("/");
         } catch (err) {
             throw err;
@@ -35,8 +35,16 @@ export const AuthProvider = ({ children }) => {
         navigate('/');
     };
 
+    const isLoggedIn = () => {
+        if (!user.username || !user.email)
+        {
+            return false;
+        }
+        return true
+    }
+
     return (
-        <AuthContext.Provider value={{ user, loginUser, logoutUser }}>
+        <AuthContext.Provider value={{ user, loginUser, logoutUser, isLoggedIn }}>
             {children}
         </AuthContext.Provider>
     );
