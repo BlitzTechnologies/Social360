@@ -3,6 +3,8 @@ import Footer from './components/common/Footer';
 import Navbar from './components/common/Navbar';
 import { Box, createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import './index.css';
+import { AlertProvider } from './contexts/AlertContext';
+import AlertComponenet from './components/common/Alert';
 
 // Create a theme instance.
 const theme = createTheme({
@@ -25,16 +27,19 @@ function Root() {
         <>
             <ThemeProvider theme={theme}>
                 <CssBaseline /> {/* Ensures the baseline styles are applied globally */}
-                <Navbar />
-                <Box
-                    sx={{
-                        minHeight: "84vh",
-                    }}
-                >
-                    <Outlet />
-                </Box>
-                <Footer />
-                <ScrollRestoration />
+                <AlertProvider>
+                    <Navbar />
+                    <AlertComponenet />
+                    <Box
+                        sx={{
+                            minHeight: "84vh",
+                        }}
+                    >
+                        <Outlet />
+                    </Box>
+                    <Footer />
+                    <ScrollRestoration />
+                </AlertProvider>
             </ThemeProvider>
         </>
     );

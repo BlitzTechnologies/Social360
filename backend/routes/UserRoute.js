@@ -7,7 +7,7 @@ const { UserMapper } = require('../mappers/AccountMapper');
 const { validateToken } = require('../modules/AuthHelper');
 
 
-router.get('/', validateToken, async (req, res) => {
+router.get('/', async (req, res) => {
   const users = await userRepository.getAllUsers();
   res.json(users);
 });
