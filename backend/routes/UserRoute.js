@@ -5,6 +5,7 @@ const { validateRegisterUser, hashPassword } = require('../modules/accounts/User
 const { UserMapper } = require('../mappers/AccountMapper');
 const { validateToken } = require('../modules/AuthHelper');
 const { UserRole } = require('../models/enum');
+const { generateUUID } = require('../modules/commonUtils/uuidGenerater');
 
 
 router.get('/', async (req, res) => {
@@ -43,6 +44,7 @@ router.post('/', async (req, res) => {
   try {
     let hashedPassword = await hashPassword(reqObj.password);
     let userModel = UserMapper.fromObject(reqObj);
+    userModel.uuid = generateUUID();
     userModel.password = hashedPassword;
     userModel.role = UserRole.USER;
     const newUser = await userRepository.createUser(userModel);

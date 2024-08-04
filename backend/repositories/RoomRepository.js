@@ -26,8 +26,12 @@ class RoomRepository {
     return response;
   }
 
-  async getById(id) {
-    return users.find(user => user.id === id);
+  async getById(reqId) {
+    const query = {
+        uuid: reqId
+    }
+    const response = await findOneDocument(query, constants.MONGO_DB_COLLECTIONS.ROOM_COLLECTION)
+    return response;
   }
 
   async update(id, updatedUser) {

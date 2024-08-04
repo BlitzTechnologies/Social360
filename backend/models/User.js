@@ -1,4 +1,5 @@
 class User {
+    uuid;
     fullName;
     username;
     email;

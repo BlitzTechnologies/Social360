@@ -7,6 +7,7 @@ class RoomMapper {
             throw new Error('Invalid input: must be an object');
         }
         const room = new Room();
+        room.uuid = obj.uuid || '',
         room.code = obj.code || '';
         room.host = obj.host || '';
         room.participants = obj.participants || '';
@@ -21,6 +22,7 @@ class RoomMapper {
             throw new Error('Invalid input: must be an instance of Room');
         }
         return {
+            uuid: room.uuid,
             code: room.code,
             host: room.host,
             participants: room.participants,

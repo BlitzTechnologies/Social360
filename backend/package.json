@@ -36,6 +36,7 @@
     "to-regex-range": "^5.0.1",
     "touch": "^3.1.1",
     "undefsafe": "^2.0.5",
+    "uuid": "^10.0.0",
     "validator": "^13.12.0",
     "yup": "^1.4.0"
   },

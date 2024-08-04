@@ -1,4 +1,5 @@
 class Room {
+    uuid;
     code;
     host;
     participants;
@@ -12,6 +13,7 @@ class Settings {
 }
 
 class RoomLog {
+    uuid;
     code;
     host;
     participants;

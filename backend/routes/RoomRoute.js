@@ -4,6 +4,7 @@ const userRepository = require('../repositories/UserRepository');
 const RoomRepository = require('../repositories/RoomRepository');
 const { validateCreateRoom, generateRoomCode } = require('../modules/rooms/RoomHelper');
 const { RoomMapper } = require('../mappers/RoomMapper');
+const { generateUUID } = require('../modules/commonUtils/uuidGenerater');
 
 
 router.get('/', async (req, res) => {
@@ -11,8 +12,9 @@ router.get('/', async (req, res) => {
     res.json(response);
 });
 
-router.get('/:id', (req, res) => {
-    const response = RoomRepository.getById(req.params.id);
+router.get('/:id', async (req, res) => {
+    const reqId = req.params.id
+    const response = await RoomRepository.getById(reqId);
     if (response) {
         res.json(response);
     } else {
@@ -30,6 +32,7 @@ router.post('/', async (req, res) => {
     try {
         let roomCode = generateRoomCode();
         let roomModel = RoomMapper.fromObject(reqObj);
+        roomModel.uuid = generateUUID();
         roomModel.code = roomCode;
         roomModel.host = reqObj.createdBy;
         roomModel.participants = [reqObj.createdBy];
