@@ -1,22 +1,33 @@
 const constants = require("../modules/constants");
-const { insertDocument, findAllDocuments } = require("../services/db");
+const { insertDocument, findAllDocuments, findOneDocument, findMultipleDocuments } = require("../services/db");
 
 // Mock implementation for illustration
 const users = [];
 
 class UserRepository {
+
+  async createUser(user) {
+    const response = await insertDocument(user, constants.MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
+    return response;
+  }
+
   async getAllUsers() {
     const response = await findAllDocuments(constants.MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
     return response;
   }
 
-  async getUserById(id) {
-    return users.find(user => user.id === id);
+  async getOneUserByQuery(query) {
+    const response = await findOneDocument(query, constants.MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
+    return response;
   }
 
-  async createUser(user) {
-    const response = await insertDocument(user, constants.MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
+  async getMultipleUsersByQuery(query) {
+    const response = await findMultipleDocuments(query, constants.MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
     return response;
+  }
+
+  async getUserById(id) {
+    return users.find(user => user.id === id);
   }
 
   async updateUser(id, updatedUser) {

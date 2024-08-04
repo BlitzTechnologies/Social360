@@ -44,6 +44,22 @@ async function findAllDocuments(collectionName) {
     return documents;
 }
 
+async function findOneDocument(query, collectionName) {
+    const db = await connectToDb();
+    const collection = db.collection(collectionName);
+    const result = await collection.findOne(query);
+    await closeDbConnection(client);
+    return result;
+  }
+
+  async function findMultipleDocuments(query, collectionName) {
+    const db = await connectToDb();
+    const collection = db.collection(collectionName);
+    const result = await collection.find(query).toArray();
+    await closeDbConnection(client);
+    return result;
+  }
+
 async function insertDocument(data, collectionName) {
     const db = await connectToDb();
     const collection = db.collection(collectionName);
@@ -64,5 +80,7 @@ module.exports = {
     connectToDb,
     closeDbConnection,
     insertDocument,
-    findAllDocuments
+    findAllDocuments,
+    findOneDocument,
+    findMultipleDocuments
 };

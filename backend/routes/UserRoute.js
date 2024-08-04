@@ -6,6 +6,7 @@ const { MONGO_DB_COLLECTIONS } = require('../modules/constants');
 const { UserMapper } = require('../mappers/AccountMapper');
 const { validateToken } = require('../modules/AuthHelper');
 const { UserRole } = require('../models/enum');
+const yup = require("yup");
 
 
 router.get('/', async (req, res) => {
@@ -29,9 +30,16 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ message: status.errors })
 
   }
-  let userList = await userRepository.getAllUsers(MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
-  // ensure no duplicate emails/ username
-  if (userList.some(user => user.username === reqObj.username || user.email === reqObj.email)) {
+  const query = {
+    $or:
+      [
+        { username: reqObj.username },
+        { email: reqObj.email }
+      ]
+
+  };
+  const result = await userRepository.getOneUserByQuery(query);
+  if (result !== null) {
     return res.status(400).json({ message: "username or email already exists" })
   }
   try {
@@ -50,8 +58,11 @@ router.post('/', async (req, res) => {
 // route for on blur when filling in username
 router.post('/check/username', async (req, res) => {
   let reqObj = req.body;
-  let userList = await userRepository.getAllUsers(MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
-  if (userList.some(user => user.username === reqObj.username)) {
+  const query = {
+    username: reqObj.username
+  };
+  const result = await userRepository.getOneUserByQuery(query);
+  if (result !== null) {
     return res.status(400).json({ message: "username already exists" })
   }
   return res.status(200).json({ message: "username is unique" })
@@ -60,8 +71,11 @@ router.post('/check/username', async (req, res) => {
 // route for on blur when filling in email
 router.post('/check/email', async (req, res) => {
   let reqObj = req.body;
-  let userList = await userRepository.getAllUsers(MONGO_DB_COLLECTIONS.ACCOUNT_COLLECTION)
-  if (userList.some(user => user.email === reqObj.email)) {
+  const query = {
+    email: reqObj.email
+  };
+  const result = await userRepository.getOneUserByQuery(query);
+  if (result !== null) {
     return res.status(400).json({ message: "email already exists" })
   }
   return res.status(200).json({ message: "email is unique" })
