@@ -129,10 +129,19 @@ function LoginForm() {
                                 name="usernameEmail"
                                 sx={{
                                     mb: 3,
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: '#d68910',
+                                    },
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
-                                            borderColor: '#ffbf00',
+                                            borderColor: '#ffbf00', 
                                         },
+                                        '&:hover fieldset': {
+                                            borderColor: '#d68910 ', 
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#d68910 ', 
+                                        }
                                     }
                                 }}
                             />
@@ -158,10 +167,19 @@ function LoginForm() {
                                 }}
                                 sx={{
                                     mb: 1,
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: '#d68910',
+                                    },
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
                                             borderColor: '#ffbf00',
                                         },
+                                        '&:hover fieldset': {
+                                            borderColor: '#d68910 ', 
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#d68910 ',
+                                        }
                                     }
                                 }}
                             />
@@ -184,7 +202,15 @@ function LoginForm() {
                                     }
                                 }}>
                                 Log In
-                            </Button>
+                            </Button><Link href="/register" variant="body2"
+                                sx={{
+                                    display: 'block',
+                                    textAlign: 'center',
+                                    color: '#b38600',
+                                    mb: 1
+                                }}>
+                                Click here to register!
+                            </Link>
                             <Link href="#" variant="body2"
                                 sx={{
                                     display: 'block',
@@ -193,6 +219,7 @@ function LoginForm() {
                                 }}>
                                 Forgot password?
                             </Link>
+                            
                         </Box>
                     </Grid>
                 </Grid>

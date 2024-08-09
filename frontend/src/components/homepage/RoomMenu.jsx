@@ -1,14 +1,21 @@
 import React from 'react';
 import { Button, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-function RoomMenu({ onCreateClick, onJoinClick }) {
+function RoomMenu() {
+    const navigate = useNavigate(); 
+
+    const handleCreateClick = () => {
+        navigate('/createroom'); 
+    };
     return (
         <Grid container spacing={2} justifyContent="center" sx={{ mt: 1 }}> 
             <Grid item>
                 <Button
                     variant="contained"
                     size='large'
-                    onClick={onCreateClick}
+                    // onClick={onCreateClick}
+                    onClick={handleCreateClick} // Use the new handler that navigates
                     sx={{
                         backgroundColor: "orange",  
                         color: '#ffffff',  
@@ -30,7 +37,7 @@ function RoomMenu({ onCreateClick, onJoinClick }) {
                 <Button
                     variant="contained"
                     size='large'
-                    onClick={onJoinClick}
+                    // onClick={onJoinClick}
                     sx={{
                         backgroundColor: "#1565c0",
                         color: '#ffffff', 
