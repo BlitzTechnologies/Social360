@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import { Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Typography, Box, Snackbar, Alert } from '@mui/material';
-import { RoomVisibility } from '../../enums/enum.js'; 
+import { RoomVisibility } from '../../enums/enum.js';
+import { useAuth } from '../../contexts/AuthContext.js';
+import { createRoom } from '../../api/room';
+import { useNavigate } from "react-router-dom";
+import { useAlert } from '../../contexts/AlertContext';
+import * as yup from 'yup';
 
 function CreateRoomForm() {
+    const { user } = useAuth()
+    const { showAlert } = useAlert();
+    const navigate = useNavigate();
+
     const [roomDetails, setRoomDetails] = useState({
         numberOfParticipants: '',
         visibility: ''
@@ -19,8 +28,31 @@ function CreateRoomForm() {
         if (!roomDetails.visibility || !roomDetails.numberOfParticipants) {
             setOpenSnackbar(true);
         } else {
-            console.log('Room Details:', roomDetails);
-            // Proceed with form submission logic
+            const roomData = {
+                settings: {
+                    roomSize: roomDetails.numberOfParticipants,
+                    visibility: roomDetails.visibility === 'public' ? 2 : 1
+                },
+                createdBy: {
+                    username: user.username,
+                    email: user.email,
+                    id: 'nigga'
+                }
+            };
+            console.log(roomData)
+            createRoom(roomData)
+                .then((res) => {
+                    navigate('/');
+                    showAlert("success", "Room successfully created.");
+                })
+                .catch((err) => {
+                    if (err.response.status === 400) {
+                        showAlert("error", err.response.data.message);
+                    } else {
+                        showAlert('error', 'Server error occurred, please wait or contact us.');
+                    }
+                });
+            console.log("Room created")
         }
     };
 
