@@ -10,7 +10,7 @@ import { checkEmail, checkUsername, register } from '../../api/user';
 import { useNavigate } from "react-router-dom";
 import { useAlert } from '../../contexts/AlertContext';
 
-// Create a schema for validation
+
 const schema = yup.object({
     fullName: yup.string().required("Full name is required"),
     email: yup.string().email("Invalid email address").required("Email is required"),
@@ -44,12 +44,29 @@ function RegisterForm() {
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+
         yup.reach(schema, name).validate(value).then(() => {
             setErrors(prev => ({ ...prev, [name]: "" }));
         }).catch(err => {
             setErrors(prev => ({ ...prev, [name]: err.message }));
         });
+
+        if (name === 'password' || name === 'confirmPassword') {
+            const passwordVal = name === 'password' ? value : formData.password;
+            const confirmPasswordVal = name === 'confirmPassword' ? value : formData.confirmPassword;
+
+            setTimeout(() => {
+                if (passwordVal !== confirmPasswordVal) {
+                    setErrors(prev => ({ ...prev, confirmPassword: "Passwords do not match" }));
+                } else {
+                    setErrors(prev => ({ ...prev, confirmPassword: "" }));
+                }
+            }, 0);
+        }
     };
 
     const handleBlur = (event) => {
@@ -74,7 +91,7 @@ function RegisterForm() {
             .then((res) => {
             })
             .catch((err) => {
-                setErrors(prev => ({ ...prev, email: 'Email is already taken' })); // Update error message if needed
+                setErrors(prev => ({ ...prev, email: 'Email is already taken' })); 
             });
     };
 
@@ -83,7 +100,7 @@ function RegisterForm() {
             .then((res) => {
             })
             .catch((err) => {
-                setErrors(prev => ({ ...prev, username: 'Username is already taken' })); // Update error message if needed
+                setErrors(prev => ({ ...prev, username: 'Username is already taken' })); 
             });
     };
 
@@ -135,11 +152,11 @@ function RegisterForm() {
                 sx={{
                     display: 'flex',
                     width: {
-                        xs: '90%', 
-                        sm: '70%', 
-                        md: '60%', 
-                        lg: '50%', 
-                        xl: '50%' 
+                        xs: '90%',
+                        sm: '70%',
+                        md: '60%',
+                        lg: '50%',
+                        xl: '50%'
                     }
                 }}>
                 <Grid container>
@@ -181,7 +198,7 @@ function RegisterForm() {
                                     type={(key === "password" && !showPassword) || (key === "confirmPassword" && !showConfirmPassword) ? "password" : "text"}
                                     value={formData[key]}
                                     onChange={handleChange}
-                                    onBlur={key === "email" || key === "username" ? handleBlur : null} // Add onBlur handler
+                                    onBlur={key === "email" || key === "username" ? handleBlur : null} 
                                     error={!!errors[key]}
                                     helperText={errors[key]}
                                     autoComplete={key}

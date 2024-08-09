@@ -23,7 +23,7 @@ function AlertComponent() {
                 severity={alert.severity}
                 onClose={hideAlert}
                 sx={{
-                    width: '90%',
+                    width: '42.5%',
                     margin: '0 auto',
                     marginTop: '10px',
                     ...(alert.severity === 'success' && {

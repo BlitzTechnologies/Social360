@@ -15,11 +15,18 @@ function LoginForm() {
         rememberMe: false
     });
     const [showPassword, setShowPassword] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(''); // State for error message
-
+    const [errorMessage, setErrorMessage] = useState(''); 
+    const [errors, setErrors] = useState({ usernameEmail: '', password: '' });
+    
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+
+        if (!value) {
+            setErrors(prev => ({ ...prev, [name]: 'Field is required' }));
+        } else {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
     };
 
     const handleCheckboxChange = () => {
@@ -32,11 +39,35 @@ function LoginForm() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        loginUser(formData)
-            .catch((err) => {
-                const errorMessage = err.response?.data?.message || "An unexpected error occurred";
-                setErrorMessage(errorMessage); // Update error message state
-            });
+
+        let anyErrors = false;
+        const newErrors = {
+            usernameEmail: '',
+            password: ''
+        };
+    
+        if (!formData.usernameEmail.trim()) {
+            newErrors.usernameEmail = 'Field is required';
+            anyErrors = true;
+        }
+        
+        if (!formData.password.trim()) {
+            newErrors.password = 'Field is required';
+            anyErrors = true;
+        }
+    
+        setErrors(newErrors);
+    
+
+        if (!anyErrors) {
+            loginUser(formData)
+                .then(() => {
+                })
+                .catch((err) => {
+                    const errorMessage = err.response?.data?.message || "An unexpected error occurred";
+                    setErrorMessage(errorMessage);
+                });
+        }
     };
 
     return (
@@ -91,6 +122,8 @@ function LoginForm() {
                                 variant="outlined"
                                 fullWidth
                                 required
+                                error={!!errors.usernameEmail}
+                                helperText={errors.usernameEmail}
                                 value={formData.usernameEmail}
                                 onChange={handleChange}
                                 name="usernameEmail"
@@ -108,6 +141,8 @@ function LoginForm() {
                                 variant="outlined"
                                 fullWidth
                                 required
+                                error={!!errors.password}
+                                helperText={errors.password}
                                 type={showPassword ? 'text' : 'password'}
                                 value={formData.password}
                                 onChange={handleChange}
