@@ -7,6 +7,7 @@ class UserMapper {
             throw new Error('Invalid input: must be an object');
         }
         const user = new User();
+        user.uuid = obj.uuid || '',
         user.fullName = obj.fullName || '';
         user.username = obj.username || '';
         user.email = obj.email || '';
@@ -20,6 +21,7 @@ class UserMapper {
             throw new Error('Invalid input: must be an instance of User');
         }
         return {
+            uuid: user.uuid,
             fullName: user.fullName,
             username: user.username,
             email: user.email,

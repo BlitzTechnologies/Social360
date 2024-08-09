@@ -6,8 +6,8 @@ import registerImage from '../images/register-image.jpg';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import * as yup from 'yup';
-import { register } from '../../api/user';
-import { useNavigate } from "react-router-dom"
+import { checkEmail, checkUsername, register } from '../../api/user';
+import { useNavigate } from "react-router-dom";
 import { useAlert } from '../../contexts/AlertContext';
 
 // Create a schema for validation
@@ -52,12 +52,39 @@ function RegisterForm() {
         });
     };
 
+    const handleBlur = (event) => {
+        const { name, value } = event.target;
+        if (name === 'email') {
+            handleCheckEmail(value);
+        } else if (name === 'username') {
+            handleCheckUsername(value);
+        }
+    };
+
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
     const toggleConfirmPasswordVisibility = () => {
         setShowConfirmPassword(!showConfirmPassword);
+    };
+
+    const handleCheckEmail = (email) => {
+        checkEmail({ email })
+            .then((res) => {
+            })
+            .catch((err) => {
+                setErrors(prev => ({ ...prev, email: 'Email is already taken' })); // Update error message if needed
+            });
+    };
+
+    const handleCheckUsername = (username) => {
+        checkUsername({ username })
+            .then((res) => {
+            })
+            .catch((err) => {
+                setErrors(prev => ({ ...prev, username: 'Username is already taken' })); // Update error message if needed
+            });
     };
 
     const handleSubmit = (event) => {
@@ -68,16 +95,15 @@ function RegisterForm() {
                 register(formData)
                     .then((res) => {
                         navigate('/login');
-                        showAlert("success", "Account successfully registered.")
+                        showAlert("success", "Account successfully registered.");
                     })
                     .catch((err) => {
                         if (err.response.status === 400) {
-                            showAlert("error", err.response.data.message)
+                            showAlert("error", err.response.data.message);
+                        } else {
+                            showAlert('error', 'Server error occurred, please wait or contact us.');
                         }
-                        else {
-                            showAlert('error', 'Server error occured, please wait or contact us.')
-                        }
-                    })
+                    });
             })
             .catch(err => {
                 const newErrors = err.inner.reduce((acc, curr) => {
@@ -109,11 +135,11 @@ function RegisterForm() {
                 sx={{
                     display: 'flex',
                     width: {
-                        xs: '90%', // On extra-small devices (mobile phones)
-                        sm: '70%', // On small devices (tablets)
-                        md: '60%', // On medium devices (small laptops)
-                        lg: '50%', // On large devices (desktops)
-                        xl: '50%'  // On extra-large devices (large screens)
+                        xs: '90%', 
+                        sm: '70%', 
+                        md: '60%', 
+                        lg: '50%', 
+                        xl: '50%' 
                     }
                 }}>
                 <Grid container>
@@ -140,7 +166,7 @@ function RegisterForm() {
                                 textAlign: 'center',
                                 color: '#cc9900'
                             }}>
-                            Start socialising today
+                            Start socializing today
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                             {Object.keys(formData).map(key => (
@@ -155,6 +181,7 @@ function RegisterForm() {
                                     type={(key === "password" && !showPassword) || (key === "confirmPassword" && !showConfirmPassword) ? "password" : "text"}
                                     value={formData[key]}
                                     onChange={handleChange}
+                                    onBlur={key === "email" || key === "username" ? handleBlur : null} // Add onBlur handler
                                     error={!!errors[key]}
                                     helperText={errors[key]}
                                     autoComplete={key}
@@ -178,7 +205,6 @@ function RegisterForm() {
                                             fontSize: '0.8rem',
                                             top: '-7px'
                                         },
-
                                         '& .MuiOutlinedInput-root': {
                                             '& fieldset': {
                                                 borderColor: '#ffbf00',

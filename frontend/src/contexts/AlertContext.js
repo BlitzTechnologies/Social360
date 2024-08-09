@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Alert } from '@mui/material';
 
 const AlertContext = createContext();
 
@@ -11,7 +10,7 @@ export const AlertProvider = ({ children }) => {
   };
 
   const hideAlert = () => {
-    setAlert({ ...alert, show: false });
+    setAlert({ ...alert, show: false});
   };
 
   return (
