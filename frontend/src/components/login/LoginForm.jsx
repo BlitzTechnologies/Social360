@@ -15,13 +15,13 @@ function LoginForm() {
         rememberMe: false
     });
     const [showPassword, setShowPassword] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(''); // State for error message
+    const [errorMessage, setErrorMessage] = useState(''); 
     const [errors, setErrors] = useState({ usernameEmail: '', password: '' });
     
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        // Clear errors as the user types
+
         if (!value) {
             setErrors(prev => ({ ...prev, [name]: 'Field is required' }));
         } else {
@@ -39,8 +39,7 @@ function LoginForm() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-    
-        // Check if either field is empty and set appropriate error messages
+
         let anyErrors = false;
         const newErrors = {
             usernameEmail: '',
@@ -59,11 +58,10 @@ function LoginForm() {
     
         setErrors(newErrors);
     
-        // Only attempt login if there are no errors
+
         if (!anyErrors) {
             loginUser(formData)
                 .then(() => {
-                    // Handle successful login if needed
                 })
                 .catch((err) => {
                     const errorMessage = err.response?.data?.message || "An unexpected error occurred";

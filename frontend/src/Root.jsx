@@ -7,7 +7,7 @@ import { AlertProvider } from './contexts/AlertContext';
 import AlertComponenet from './components/common/Alert';
 import { AuthProvider } from './contexts/AuthContext';
 
-// Create a theme instance.
+
 const theme = createTheme({
     typography: {
         fontFamily: 'Poppins, Arial, sans-serif'
