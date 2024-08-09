@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage"
 import ContactPage from "./pages/ContactPage";
 import MainVideo from "./components/videoTech/MainVideo";
+import CreateRoomPage from "./pages/CreateRoomPage"
 const router = createBrowserRouter([
     {
       path: "/",
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
         {
           path: "Contact",
           element: <ContactPage />,
+        },
+        {
+          path: "CreateRoom",
+          element: <CreateRoomPage />,
         },
         {
           path: "Video",
