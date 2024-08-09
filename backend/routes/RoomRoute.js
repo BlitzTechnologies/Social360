@@ -6,7 +6,6 @@ const { validateCreateRoom, generateRoomCode } = require('../modules/rooms/RoomH
 const { RoomMapper } = require('../mappers/RoomMapper');
 const { generateUUID } = require('../modules/commonUtils/uuidGenerater');
 
-
 router.get('/', async (req, res) => {
     const response = await RoomRepository.getAll();
     res.json(response);
@@ -21,6 +20,7 @@ router.get('/:id', async (req, res) => {
         res.status(404).send('Room not found');
     }
 });
+
 
 router.post('/', async (req, res) => {
     let reqObj = req.body;
@@ -44,31 +44,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// route for on blur when filling in username
-router.post('/check/username', async (req, res) => {
-    let reqObj = req.body;
-    const query = {
-        username: reqObj.username
-    };
-    const result = await userRepository.getOneUserByQuery(query);
-    if (result !== null) {
-        return res.status(400).json({ message: "username already exists" })
-    }
-    return res.status(200).json({ message: "username is unique" })
-});
-
-// route for on blur when filling in email
-router.post('/check/email', async (req, res) => {
-    let reqObj = req.body;
-    const query = {
-        email: reqObj.email
-    };
-    const result = await userRepository.getOneUserByQuery(query);
-    if (result !== null) {
-        return res.status(400).json({ message: "email already exists" })
-    }
-    return res.status(200).json({ message: "email is unique" })
-});
 
 router.put('/:id', (req, res) => {
     const updatedUser = userRepository.updateUser(req.params.id, req.body);
