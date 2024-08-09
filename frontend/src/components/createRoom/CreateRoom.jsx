@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Typography, Box, Snackbar, Alert } from '@mui/material';
+import { RoomVisibility } from '../../enums/enum.js'; 
 
 function CreateRoomForm() {
     const [roomDetails, setRoomDetails] = useState({
@@ -54,23 +55,7 @@ function CreateRoomForm() {
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={7}>
-                            <FormControl fullWidth required
-                                sx={{
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: '#d68910',
-                                    },
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: '#ffbf00', 
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: '#d68910 ', 
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: '#d68910 ',
-                                        }
-                                    }
-                                }}>
+                            <FormControl fullWidth required>
                                 <InputLabel id="visibility-label">Visibility</InputLabel>
                                 <Select
                                     labelId="visibility-label"
@@ -79,29 +64,13 @@ function CreateRoomForm() {
                                     value={roomDetails.visibility}
                                     onChange={handleChange}
                                 >
-                                    <MenuItem value="public">Public</MenuItem>
-                                    <MenuItem value="private">Private</MenuItem>
+                                    <MenuItem value={RoomVisibility.private}>Private</MenuItem>
+                                    <MenuItem value={RoomVisibility.public}>Public</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
                         <Grid item xs={5}>
-                            <FormControl fullWidth required
-                                sx={{
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: '#d68910',
-                                    },
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: '#ffbf00', 
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: '#d68910 ', 
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: '#d68910 ', 
-                                        }
-                                    }
-                                }}>
+                            <FormControl fullWidth required>
                                 <InputLabel id="number-of-participants-label">Participants</InputLabel>
                                 <Select
                                     labelId="number-of-participants-label"
