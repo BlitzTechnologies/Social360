@@ -91,7 +91,7 @@ function RegisterForm() {
             .then((res) => {
             })
             .catch((err) => {
-                setErrors(prev => ({ ...prev, email: 'Email is already taken' })); 
+                setErrors(prev => ({ ...prev, email: 'Email is already taken' }));
             });
     };
 
@@ -100,7 +100,7 @@ function RegisterForm() {
             .then((res) => {
             })
             .catch((err) => {
-                setErrors(prev => ({ ...prev, username: 'Username is already taken' })); 
+                setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
             });
     };
 
@@ -198,7 +198,7 @@ function RegisterForm() {
                                     type={(key === "password" && !showPassword) || (key === "confirmPassword" && !showConfirmPassword) ? "password" : "text"}
                                     value={formData[key]}
                                     onChange={handleChange}
-                                    onBlur={key === "email" || key === "username" ? handleBlur : null} 
+                                    onBlur={key === "email" || key === "username" ? handleBlur : null}
                                     error={!!errors[key]}
                                     helperText={errors[key]}
                                     autoComplete={key}
@@ -222,10 +222,19 @@ function RegisterForm() {
                                             fontSize: '0.8rem',
                                             top: '-7px'
                                         },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: '#d68910',
+                                        },
                                         '& .MuiOutlinedInput-root': {
                                             '& fieldset': {
                                                 borderColor: '#ffbf00',
                                             },
+                                            '&:hover fieldset': {
+                                                borderColor: '#d68910 ',
+                                            },
+                                            '&.Mui-focused fieldset': {
+                                                borderColor: '#d68910 ',
+                                            }
                                         }
                                     }}
                                 />

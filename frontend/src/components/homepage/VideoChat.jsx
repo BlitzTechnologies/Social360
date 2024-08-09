@@ -28,14 +28,6 @@ function VideoChat() {
         };
     }, []);
 
-    const handleCreateClick = () => {
-        console.log('Create Room button clicked');
-    };
-
-    const handleJoinClick = () => {
-        console.log('Join Room button clicked');
-    };
-
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', marginTop: "3%", marginBottom: "3%" }}>
             <Box
@@ -66,7 +58,7 @@ function VideoChat() {
                 <video ref={videoRef} autoPlay style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
                 </Paper>
             </Box>
-            <RoomMenu onCreateClick={handleCreateClick} onJoinClick={handleJoinClick} />
+            <RoomMenu/>
         </div>
     );
 }
