@@ -8,14 +8,18 @@ function RoomMenu() {
     const handleCreateClick = () => {
         navigate('/createroom'); 
     };
+
+    const handleJoinClick = () => {
+        navigate('/joinroom'); 
+    };
+
     return (
         <Grid container spacing={2} justifyContent="center" sx={{ mt: 1 }}> 
             <Grid item>
                 <Button
                     variant="contained"
                     size='large'
-                    // onClick={onCreateClick}
-                    onClick={handleCreateClick} // Use the new handler that navigates
+                    onClick={handleCreateClick} 
                     sx={{
                         backgroundColor: "orange",  
                         color: '#ffffff',  
@@ -37,7 +41,7 @@ function RoomMenu() {
                 <Button
                     variant="contained"
                     size='large'
-                    // onClick={onJoinClick}
+                    onClick={handleJoinClick}
                     sx={{
                         backgroundColor: "#1565c0",
                         color: '#ffffff', 

@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage"
 import ContactPage from "./pages/ContactPage";
 import CreateRoomPage from "./pages/CreateRoomPage"
+import JoinRoomPage from "./pages/JoinRoomPage";
 const router = createBrowserRouter([
     {
       path: "/",
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
         {
           path: "CreateRoom",
           element: <CreateRoomPage />,
+        },
+        {
+          path: "JoinRoom",
+          element: <JoinRoomPage />,
         },
       ],
     },

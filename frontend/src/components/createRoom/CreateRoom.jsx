@@ -27,11 +27,11 @@ function CreateRoomForm() {
         event.preventDefault();
         if (!roomDetails.visibility || !roomDetails.numberOfParticipants) {
             setOpenSnackbar(true);
-        } else {
+        } else {    
             const roomData = {
                 settings: {
                     roomSize: roomDetails.numberOfParticipants,
-                    visibility: roomDetails.visibility === 'public' ? 2 : 1
+                    visibility: roomDetails.visibility === RoomVisibility.public ? 2 : 1
                 },
                 createdBy: {
                     username: user.username,
