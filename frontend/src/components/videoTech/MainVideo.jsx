@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { io } from 'socket.io-client';
+import * as mediasoupClient from "mediasoup-client";
 import './MainVideo.css'; // Import the CSS file for styling
 
 const socket = io(process.env.REACT_APP_MEDIA_SOUP_CONNECTION_END_POINT);
@@ -10,7 +11,14 @@ socket.on('connection-success', (res) => {
 
 function MainVideo() {
   const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
 
+  let device;
+  let rtpCapabilities;
+  let producerTransport;
+  let consumerTransport;
+  let producer;
+  let consumer;
   let params = {
     encodings: [
       {
@@ -67,6 +75,200 @@ function MainVideo() {
       });
   };
 
+  const createDevice = async () => {
+    try {
+      device = new mediasoupClient.Device()
+
+      // https://mediasoup.org/documentation/v3/mediasoup-client/api/#device-load
+      // Loads the device with RTP capabilities of the Router (server side)
+      await device.load({
+        // see getRtpCapabilities() below
+        routerRtpCapabilities: rtpCapabilities
+      })
+
+      console.log('RTP Capabilities', device.rtpCapabilities)
+
+    } catch (error) {
+      console.log(error)
+      if (error.name === 'UnsupportedError')
+        console.warn('browser not supported')
+    }
+  }
+
+  const getRtpCapabilities = () => {
+    // make a request to the server for Router RTP Capabilities
+    // see server's socket.on('getRtpCapabilities', ...)
+    // the server sends back data object which contains rtpCapabilities
+    socket.emit('getRtpCapabilities', (data) => {
+      console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`)
+
+      // we assign to local variable and will be used when
+      // loading the client Device (see createDevice above)
+      rtpCapabilities = data.rtpCapabilities
+    })
+  }
+
+  const createSendTransport = () => {
+    // see server's socket.on('createWebRtcTransport', sender?, ...)
+    // this is a call from Producer, so sender = true
+    socket.emit('createWebRtcTransport', { sender: true }, ({ params }) => {
+      // The server sends back params needed 
+      // to create Send Transport on the client side
+      if (params.error) {
+        console.log(params.error)
+        return
+      }
+
+      console.log(params)
+
+      // creates a new WebRTC Transport to send media
+      // based on the server's producer transport params
+      // https://mediasoup.org/documentation/v3/mediasoup-client/api/#TransportOptions
+      producerTransport = device.createSendTransport(params)
+
+      // https://mediasoup.org/documentation/v3/communication-between-client-and-server/#producing-media
+      // this event is raised when a first call to transport.produce() is made
+      // see connectSendTransport() below
+      producerTransport.on('connect', async ({ dtlsParameters }, callback, errback) => {
+        try {
+          // Signal local DTLS parameters to the server side transport
+          // see server's socket.on('transport-connect', ...)
+          await socket.emit('transport-connect', {
+            dtlsParameters,
+          })
+
+          // Tell the transport that parameters were transmitted.
+          callback()
+
+        } catch (error) {
+          errback(error)
+        }
+      })
+
+      producerTransport.on('produce', async (parameters, callback, errback) => {
+        console.log(parameters)
+
+        try {
+          // tell the server to create a Producer
+          // with the following parameters and produce
+          // and expect back a server side producer id
+          // see server's socket.on('transport-produce', ...)
+          await socket.emit('transport-produce', {
+            kind: parameters.kind,
+            rtpParameters: parameters.rtpParameters,
+            appData: parameters.appData,
+          }, ({ id }) => {
+            // Tell the transport that parameters were transmitted and provide it with the
+            // server side producer's id.
+            callback({ id })
+          })
+        } catch (error) {
+          errback(error)
+        }
+      })
+    })
+  }
+
+  const connectSendTransport = async () => {
+    // we now call produce() to instruct the producer transport
+    // to send media to the Router
+    // https://mediasoup.org/documentation/v3/mediasoup-client/api/#transport-produce
+    // this action will trigger the 'connect' and 'produce' events above
+    console.log("params", params)
+    producer = await producerTransport.produce(params)
+
+    producer.on('trackended', () => {
+      console.log('track ended')
+
+      // close video track
+    })
+
+    producer.on('transportclose', () => {
+      console.log('transport ended')
+
+      // close video track
+    })
+  }
+  const createRecvTransport = async () => {
+    // see server's socket.on('consume', sender?, ...)
+    // this is a call from Consumer, so sender = false
+    await socket.emit('createWebRtcTransport', { sender: false }, ({ params }) => {
+      // The server sends back params needed 
+      // to create Send Transport on the client side
+      if (params.error) {
+        console.log(params.error)
+        return
+      }
+
+      console.log(params)
+
+      // creates a new WebRTC Transport to receive media
+      // based on server's consumer transport params
+      // https://mediasoup.org/documentation/v3/mediasoup-client/api/#device-createRecvTransport
+      consumerTransport = device.createRecvTransport(params)
+
+      // https://mediasoup.org/documentation/v3/communication-between-client-and-server/#producing-media
+      // this event is raised when a first call to transport.produce() is made
+      // see connectRecvTransport() below
+      consumerTransport.on('connect', async ({ dtlsParameters }, callback, errback) => {
+        try {
+          // Signal local DTLS parameters to the server side transport
+          // see server's socket.on('transport-recv-connect', ...)
+          await socket.emit('transport-recv-connect', {
+            dtlsParameters,
+          })
+
+          // Tell the transport that parameters were transmitted.
+          callback()
+        } catch (error) {
+          // Tell the transport that something was wrong
+          errback(error)
+        }
+      })
+    })
+  }
+
+  const connectRecvTransport = async () => {
+    console.log('connectRecvTransport called');
+  
+    await socket.emit('consume', {
+      rtpCapabilities: device.rtpCapabilities,
+    }, async ({ params }) => {
+      if (params.error) {
+        console.log('Cannot Consume:', params.error);
+        return;
+      }
+  
+      console.log('Consumer params:', params);
+  
+      try {
+        consumer = await consumerTransport.consume({
+          id: params.id,
+          producerId: params.producerId,
+          kind: params.kind,
+          rtpParameters: params.rtpParameters,
+        });
+  
+        console.log('Consumer created:', consumer);
+  
+        const { track } = consumer;
+        const mediaStream = new MediaStream([track]);
+        remoteVideoRef.current.srcObject = mediaStream;
+  
+        console.log('Remote video track set');
+  
+        // Resume the consumer to start receiving media.
+        socket.emit('consumer-resume', consumer.id, () => {
+          console.log('Consumer resumed');
+        });
+      } catch (error) {
+        console.error('Error during consume:', error);
+      }
+    });
+  };
+  
+  
+
   return (
     <div id="video">
       <table>
@@ -85,7 +287,7 @@ function MainVideo() {
             </td>
             <td>
               <div id="sharedBtns">
-                <video id="remoteVideo" autoPlay className="video"></video>
+                <video ref={remoteVideoRef} autoPlay className="video"></video>
               </div>
             </td>
           </tr>
@@ -99,25 +301,25 @@ function MainVideo() {
           <tr>
             <td colSpan="2">
               <div id="sharedBtns">
-                <button id="btnRtpCapabilities">2. Get Rtp Capabilities</button>
+                <button id="btnRtpCapabilities" onClick={getRtpCapabilities}>2. Get Rtp Capabilities</button>
                 <br />
-                <button id="btnDevice">3. Create Device</button>
+                <button id="btnDevice" onClick={createDevice}>3. Create Device</button>
               </div>
             </td>
           </tr>
           <tr>
             <td>
               <div id="sharedBtns">
-                <button id="btnCreateSendTransport">4. Create Send Transport</button>
+                <button id="btnCreateSendTransport" onClick={createSendTransport}>4. Create Send Transport</button>
                 <br />
-                <button id="btnConnectSendTransport">5. Connect Send Transport & Produce</button>
+                <button id="btnConnectSendTransport" onClick={connectSendTransport}>5. Connect Send Transport & Produce</button>
               </div>
             </td>
             <td>
               <div id="sharedBtns">
-                <button id="btnRecvSendTransport">6. Create Recv Transport</button>
+                <button id="btnRecvSendTransport" onClick={createRecvTransport}>6. Create Recv Transport</button>
                 <br />
-                <button id="btnConnectRecvTransport">7. Connect Recv Transport & Consume</button>
+                <button id="btnConnectRecvTransport" onClick={connectRecvTransport}>7. Connect Recv Transport & Consume</button>
               </div>
             </td>
           </tr>
