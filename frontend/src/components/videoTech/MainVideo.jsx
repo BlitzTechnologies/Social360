@@ -231,41 +231,57 @@ function MainVideo() {
   const connectRecvTransport = async () => {
     console.log('connectRecvTransport called');
   
-    await socket.emit('consume', {
-      rtpCapabilities: device.rtpCapabilities,
-    }, async ({ params }) => {
-      if (params.error) {
-        console.log('Cannot Consume:', params.error);
-        return;
-      }
+    try {
+      await socket.emit('consume', {
+        rtpCapabilities: device.rtpCapabilities,
+      }, async ({ params }) => {
+        if (params.error) {
+          console.error('Cannot Consume:', params.error);
+          return;
+        }
   
-      console.log('Consumer params:', params);
+        console.log('Consumer params received:', params);
   
-      try {
-        consumer = await consumerTransport.consume({
-          id: params.id,
-          producerId: params.producerId,
-          kind: params.kind,
-          rtpParameters: params.rtpParameters,
-        });
+        try {
+          consumer = await consumerTransport.consume({
+            id: params.id,
+            producerId: params.producerId,
+            kind: params.kind,
+            rtpParameters: params.rtpParameters,
+          });
   
-        console.log('Consumer created:', consumer);
+          console.log('Consumer successfully created:', consumer);
   
-        const { track } = consumer;
-        const mediaStream = new MediaStream([track]);
-        remoteVideoRef.current.srcObject = mediaStream;
+          const { track } = consumer;
+          if (!track) {
+            console.error('No track found in consumer');
+            return;
+          }
   
-        console.log('Remote video track set');
+          const mediaStream = new MediaStream([track]);
+          if (!mediaStream) {
+            console.error('Failed to create media stream from track');
+            return;
+          }
   
-        // Resume the consumer to start receiving media.
-        socket.emit('consumer-resume', consumer.id, () => {
-          console.log('Consumer resumed');
-        });
-      } catch (error) {
-        console.error('Error during consume:', error);
-      }
-    });
+          remoteVideoRef.current.srcObject = mediaStream;
+  
+          console.log('Remote video track successfully set');
+  
+          // Resume the consumer to start receiving media.
+          socket.emit('consumer-resume', consumer.id, () => {
+            console.log('Consumer resumed');
+          });
+  
+        } catch (consumeError) {
+          console.error('Error during consume process:', consumeError.message);
+        }
+      });
+    } catch (emitError) {
+      console.error('Error during socket emit or consume callback:', emitError.message);
+    }
   };
+  
   
   
 
