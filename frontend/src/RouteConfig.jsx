@@ -42,7 +42,7 @@ const router = createBrowserRouter([
         element: <JoinRoomPage />,
       },
       {
-        path: "Video",
+        path: "Video/:id",
         element: <MainVideo />,
       },
     ],
