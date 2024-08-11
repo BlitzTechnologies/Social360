@@ -19,6 +19,7 @@ function MainVideo() {
   let consumerTransport;
   let producer;
   let consumer;
+  let isProducer = false;
   let params = {
     encodings: [
       {
@@ -42,7 +43,7 @@ function MainVideo() {
     },
   };
 
-  const streamSuccess = async (stream) => {
+  const streamSuccess = (stream) => {
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = stream;
     }
@@ -52,42 +53,58 @@ function MainVideo() {
       track,
       ...params,
     };
+
+    goConnect(true);
   };
 
   const getLocalStream = () => {
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: false,
-        video: {
-          width: {
-            min: 640,
-            max: 1920,
-          },
-          height: {
-            min: 400,
-            max: 1080,
-          },
+    navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        width: {
+          min: 640,
+          max: 1920,
         },
-      })
+        height: {
+          min: 400,
+          max: 1080,
+        }
+      }
+    })
       .then(streamSuccess)
-      .catch((error) => {
-        console.error('Error accessing media devices.', error);
-      });
-  };
+      .catch(error => {
+        console.log(error.message)
+      })
+  }
+  const goConsume = () => {
+    goConnect(false)
+  }
+
+  const goConnect = (producerOrConsumer) => {
+    isProducer = producerOrConsumer
+    device === undefined ? getRtpCapabilities() : goCreateTransport()
+  }
+
+  const goCreateTransport = () => {
+    isProducer ? createSendTransport() : createRecvTransport()
+  }
 
   const createDevice = async () => {
     try {
       device = new mediasoupClient.Device()
-
+  
       // https://mediasoup.org/documentation/v3/mediasoup-client/api/#device-load
       // Loads the device with RTP capabilities of the Router (server side)
       await device.load({
         // see getRtpCapabilities() below
         routerRtpCapabilities: rtpCapabilities
       })
-
-      console.log('RTP Capabilities', device.rtpCapabilities)
-
+  
+      console.log('Device RTP Capabilities', device.rtpCapabilities)
+  
+      // once the device loads, create transport
+      goCreateTransport()
+  
     } catch (error) {
       console.log(error)
       if (error.name === 'UnsupportedError')
@@ -99,12 +116,15 @@ function MainVideo() {
     // make a request to the server for Router RTP Capabilities
     // see server's socket.on('getRtpCapabilities', ...)
     // the server sends back data object which contains rtpCapabilities
-    socket.emit('getRtpCapabilities', (data) => {
+    socket.emit('createRoom', (data) => {
       console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`)
-
+  
       // we assign to local variable and will be used when
       // loading the client Device (see createDevice above)
       rtpCapabilities = data.rtpCapabilities
+  
+      // once we have rtpCapabilities from the Router, create Device
+      createDevice()
     })
   }
 
@@ -166,6 +186,7 @@ function MainVideo() {
           errback(error)
         }
       })
+      connectSendTransport()
     })
   }
 
@@ -225,12 +246,14 @@ function MainVideo() {
           errback(error)
         }
       })
+
+      connectRecvTransport();
     })
   }
 
   const connectRecvTransport = async () => {
     console.log('connectRecvTransport called');
-  
+
     try {
       await socket.emit('consume', {
         rtpCapabilities: device.rtpCapabilities,
@@ -239,9 +262,9 @@ function MainVideo() {
           console.error('Cannot Consume:', params.error);
           return;
         }
-  
+
         console.log('Consumer params received:', params);
-  
+
         try {
           consumer = await consumerTransport.consume({
             id: params.id,
@@ -249,30 +272,30 @@ function MainVideo() {
             kind: params.kind,
             rtpParameters: params.rtpParameters,
           });
-  
+
           console.log('Consumer successfully created:', consumer);
-  
+
           const { track } = consumer;
           if (!track) {
             console.error('No track found in consumer');
             return;
           }
-  
+
           const mediaStream = new MediaStream([track]);
           if (!mediaStream) {
             console.error('Failed to create media stream from track');
             return;
           }
-  
+
           remoteVideoRef.current.srcObject = mediaStream;
-  
+
           console.log('Remote video track successfully set');
-  
+
           // Resume the consumer to start receiving media.
           socket.emit('consumer-resume', consumer.id, () => {
             console.log('Consumer resumed');
           });
-  
+
         } catch (consumeError) {
           console.error('Error during consume process:', consumeError.message);
         }
@@ -281,9 +304,9 @@ function MainVideo() {
       console.error('Error during socket emit or consume callback:', emitError.message);
     }
   };
-  
-  
-  
+
+
+
 
   return (
     <div id="video">
@@ -310,32 +333,12 @@ function MainVideo() {
           <tr>
             <td>
               <div id="sharedBtns">
-                <button onClick={getLocalStream}>1. Get Local Video</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td colSpan="2">
-              <div id="sharedBtns">
-                <button id="btnRtpCapabilities" onClick={getRtpCapabilities}>2. Get Rtp Capabilities</button>
-                <br />
-                <button id="btnDevice" onClick={createDevice}>3. Create Device</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div id="sharedBtns">
-                <button id="btnCreateSendTransport" onClick={createSendTransport}>4. Create Send Transport</button>
-                <br />
-                <button id="btnConnectSendTransport" onClick={connectSendTransport}>5. Connect Send Transport & Produce</button>
+                <button id="btnLocalVideo" onClick={getLocalStream}>Publish</button>
               </div>
             </td>
             <td>
               <div id="sharedBtns">
-                <button id="btnRecvSendTransport" onClick={createRecvTransport}>6. Create Recv Transport</button>
-                <br />
-                <button id="btnConnectRecvTransport" onClick={connectRecvTransport}>7. Connect Recv Transport & Consume</button>
+                <button id="btnRecvSendTransport" onClick={goConsume}>Consume</button>
               </div>
             </td>
           </tr>
