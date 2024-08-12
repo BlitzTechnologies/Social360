@@ -7,6 +7,7 @@ const cors = require("cors");
 const http = require('http');
 const { Server } = require('socket.io');
 const mediasoup = require('mediasoup'); // Import Mediasoup
+const { createRoom, createPeer, createWebRtcTransport, addTransport, getTransport, addProducer, informConsumers } = require('./modules/rooms/VideoHelper.js');
 
 const app = express();
 
@@ -59,7 +60,7 @@ let consumers = []      // [ { socketId1, roomName1, consumer, }, ... ]
 const createWorker = async () => {
   worker = await mediasoup.createWorker({
     rtcMinPort: 2000,
-    rtcMaxPort: 2020,
+    rtcMaxPort: 2100,
   })
   console.log(`worker pid ${worker.pid}`)
 
@@ -138,19 +139,9 @@ connections.on('connection', async (socket) => {
     console.log("roomname:'", roomName)
     // create Router if it does not exist
     // const router1 = rooms[roomName] && rooms[roomName].get('data').router || await createRoom(roomName, socket.id)
-    const router1 = await createRoom(roomName, socket.id)
+    const router1 = await createRoom(rooms, roomName, socket.id, worker, mediaCodecs);
 
-    peers[socket.id] = {
-      socket,
-      roomName,           // Name for the Router this Peer joined
-      transports: [],
-      producers: [],
-      consumers: [],
-      peerDetails: {
-        name: '',
-        isAdmin: false,   // Is this Peer the Admin?
-      }
-    }
+    createPeer(peers, socket, roomName);
 
     console.log("created room peers", peers)
 
@@ -160,32 +151,6 @@ connections.on('connection', async (socket) => {
     // call callback from the client and send back the rtpCapabilities
     callback({ rtpCapabilities })
   })
-
-  const createRoom = async (roomName, socketId) => {
-    // worker.createRouter(options)
-    // options = { mediaCodecs, appData }
-    // mediaCodecs -> defined above
-    // appData -> custom application data - we are not supplying any
-    // none of the two are required
-    let router1
-    let peers = []
-    if (rooms[roomName]) {
-      console.log('room exists', rooms[roomName])
-      router1 = rooms[roomName].router
-      peers = rooms[roomName].peers || []
-    } else {
-      router1 = await worker.createRouter({ mediaCodecs, })
-    }
-
-    console.log(`Router ID: ${router1.id}`, peers.length)
-
-    rooms[roomName] = {
-      router: router1,
-      peers: [...peers, socketId],
-    }
-
-    return router1
-  }
 
   // Client emits a request for RTP Capabilities
   // This event responds to the request
@@ -202,12 +167,10 @@ connections.on('connection', async (socket) => {
   // Client emits a request to create server side Transport
   // We need to differentiate between the producer and consumer transports
   socket.on('createWebRtcTransport', async ({ consumer }, callback) => {
-    // get Room Name from Peer's properties
+
     const roomName = peers[socket.id].roomName
 
-    // get Router (Room) object this peer is in based on RoomName
     const router = rooms[roomName].router
-
 
     createWebRtcTransport(router).then(
       transport => {
@@ -221,42 +184,12 @@ connections.on('connection', async (socket) => {
         })
 
         // add transport to Peer's properties
-        addTransport(transport, roomName, consumer)
+        addTransport(transports, peers, socket, transport, roomName, consumer)
       },
       error => {
         console.log(error)
       })
   })
-
-  const addTransport = (transport, roomName, consumer) => {
-
-    transports = [
-      ...transports,
-      { socketId: socket.id, transport, roomName, consumer, }
-    ]
-
-    peers[socket.id] = {
-      ...peers[socket.id],
-      transports: [
-        ...peers[socket.id].transports,
-        transport.id,
-      ]
-    }
-  }
-  const addProducer = (producer, roomName) => {
-    producers = [
-      ...producers,
-      { socketId: socket.id, producer, roomName, }
-    ]
-
-    peers[socket.id] = {
-      ...peers[socket.id],
-      producers: [
-        ...peers[socket.id].producers,
-        producer.id,
-      ]
-    }
-  }
 
   const addConsumer = (consumer, roomName) => {
     // add the consumer to the consumers list
@@ -290,29 +223,11 @@ connections.on('connection', async (socket) => {
     callback(producerList)
   })
 
-  const informConsumers = (roomName, socketId, id) => {
-    console.log(`just joined, id ${id} ${roomName}, ${socketId}`)
-    // A new producer just joined
-    // let all consumers to consume this producer
-    producers.forEach(producerData => {
-      if (producerData.socketId !== socketId && producerData.roomName === roomName) {
-        const producerSocket = peers[producerData.socketId].socket
-        // use socket to send producer id to producer
-        producerSocket.emit('new-producer', { producerId: id })
-      }
-    })
-  }
-
-  const getTransport = (socketId) => {
-    const [producerTransport] = transports.filter(transport => transport.socketId === socketId && !transport.consumer)
-    return producerTransport.transport
-  }
-
   // see client's socket.emit('transport-connect', ...)
   socket.on('transport-connect', ({ dtlsParameters }) => {
     console.log('DTLS PARAMS... ', { dtlsParameters })
 
-    let targetTransport = getTransport(socket.id);
+    let targetTransport = getTransport(transports, socket.id);
     if (targetTransport) {
       console.log('transport connect success, target transport: ', targetTransport);
       targetTransport.connect({ dtlsParameters });
@@ -324,7 +239,7 @@ connections.on('connection', async (socket) => {
   // see client's socket.emit('transport-produce', ...)
   socket.on('transport-produce', async ({ kind, rtpParameters, appData }, callback) => {
     // call produce based on the prameters from the client
-    const producer = await getTransport(socket.id).produce({
+    const producer = await getTransport(transports, socket.id).produce({
       kind,
       rtpParameters,
     })
@@ -332,9 +247,9 @@ connections.on('connection', async (socket) => {
     // add producer to the producers array
     const { roomName } = peers[socket.id]
 
-    addProducer(producer, roomName)
+    addProducer(socket, producers, peers, producer, roomName)
 
-    informConsumers(roomName, socket.id, producer.id)
+    informConsumers(producers, peers, roomName, socket.id, producer.id)
 
     console.log('Producer ID: ', producer.id, producer.kind)
 
@@ -456,44 +371,6 @@ connections.on('connection', async (socket) => {
     await consumer.resume()
   })
 })
-
-
-const createWebRtcTransport = async (router) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // https://mediasoup.org/documentation/v3/mediasoup/api/#WebRtcTransportOptions
-      const webRtcTransport_options = {
-        listenIps: [
-          {
-            ip: '192.168.68.115', // replace with relevant IP address
-          }
-        ],
-        enableUdp: true,
-        enableTcp: true,
-        preferUdp: true,
-      }
-
-      // https://mediasoup.org/documentation/v3/mediasoup/api/#router-createWebRtcTransport
-      let transport = await router.createWebRtcTransport(webRtcTransport_options)
-      console.log(`transport id: ${transport.id}`)
-
-      transport.on('dtlsstatechange', dtlsState => {
-        if (dtlsState === 'closed') {
-          transport.close()
-        }
-      })
-
-      transport.on('close', () => {
-        console.log('transport closed')
-      })
-
-      resolve(transport)
-
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
 
 server.listen(port, () => {
   console.log(`Server is running on 192.168.68.115${port}`);
