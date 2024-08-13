@@ -5,9 +5,7 @@ const userRoutes = require('./routes/UserRoute');
 const roomRoutes = require('./routes/RoomRoute.js'); // Import the route normally
 const fs = require('fs');
 const cors = require("cors");
-const http = require('http');
-const { Server } = require('socket.io');
-const mediasoup = require('mediasoup'); // Import Mediasoup
+const https = require('https');
 const initializeSocketIOMediasoup = require('./modules/rooms/SocketMediasoup.js');
 
 const options = {
@@ -46,9 +44,9 @@ app.get('/about', (req, res) => {
 });
 
 // Create an HTTP server and integrate with Socket.IO
-const server = http.createServer(options, app);
+const server = https.createServer(options, app);
 initializeSocketIOMediasoup(server);
 
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
