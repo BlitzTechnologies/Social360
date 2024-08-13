@@ -44,7 +44,7 @@ const createWebRtcTransport = async (router) => {
             const webRtcTransport_options = {
                 listenIps: [
                     {
-                        ip: '192.168.68.115', // replace with relevant IP address
+                        ip: process.env.LOCALHOST_MEDIASOUP_SERVER, // replace with relevant IP address
                     }
                 ],
                 enableUdp: true,

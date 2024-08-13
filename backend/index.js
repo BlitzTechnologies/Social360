@@ -45,5 +45,5 @@ const server = http.createServer(app);
 initializeSocketIOMediasoup(server);
 
 server.listen(port, () => {
-  console.log(`Server is running on 192.168.68.115${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
