@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, CardActions, Button, TextField, IconButton, Paper, Drawer, Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import { Grid, Card, CardContent, Typography, CardActions, Button, TextField, IconButton, Paper, Drawer, Box, Autocomplete, Chip } from '@mui/material';
 import { getRoom } from '../../api/room';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
+
+const categoriesList = [
+  'Sports', 'Finance', 'Technology', 'Entertainment', 'Education', 'Health',
+  'Music', 'Art', 'Science', 'Business', 'Politics', 'Travel', 'Food', 'Lifestyle', 'History',
+  // Add more categories here as needed
+];
 
 function JoinRoom() {
   const [rooms, setRooms] = useState([]); // Initialize with an empty array
   const [searchQuery, setSearchQuery] = useState(''); // For the search bar
   const [filteredRooms, setFilteredRooms] = useState([]); // For filtered rooms based on search and filter
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false); // Control filter drawer
-  const [categoryFilters, setCategoryFilters] = useState({
-    sports: false,
-    finance: false,
-    technology: false,
-    entertainment: false,
-    education: false,
-    health: false,
-  }); // Example category filters
+  const [selectedCategories, setSelectedCategories] = useState([]); // Selected categories
   const [participantsFilter, setParticipantsFilter] = useState(''); // Example participants filter
 
   useEffect(() => {
@@ -38,19 +37,12 @@ function JoinRoom() {
     const filtered = rooms.filter(room => {
       const matchesSearchQuery = !searchQuery || room.code.toString().includes(searchQuery);
       const matchesParticipantsFilter = !participantsFilter || room.settings.roomSize <= participantsFilter;
-      const matchesCategoryFilter = Object.keys(categoryFilters).some(category => categoryFilters[category] && room.category === category);
-      
-      return matchesSearchQuery && matchesParticipantsFilter && (!Object.values(categoryFilters).some(v => v) || matchesCategoryFilter);
+      const matchesCategoryFilter = selectedCategories.length === 0 || selectedCategories.includes(room.category);
+
+      return matchesSearchQuery && matchesParticipantsFilter && matchesCategoryFilter;
     });
     setFilteredRooms(filtered);
-  }, [searchQuery, categoryFilters, participantsFilter, rooms]);
-
-  const handleCategoryChange = (event) => {
-    setCategoryFilters({
-      ...categoryFilters,
-      [event.target.name]: event.target.checked,
-    });
-  };
+  }, [searchQuery, selectedCategories, participantsFilter, rooms]);
 
   const toggleFilterDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -93,62 +85,63 @@ function JoinRoom() {
             >
               <Paper sx={{ padding: 2, width: 300 }}>
                 <Typography variant="h6">Filter Options</Typography>
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Checkbox checked={categoryFilters.sports} onChange={handleCategoryChange} name="sports" sx={{
-                      color: '#e6ac00',
-                      '&.Mui-checked': {
-                        color: '#e6ac00',
-                      },
-                    }} />}
-                    label="Sports"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={categoryFilters.finance} onChange={handleCategoryChange} name="finance" sx={{
-                      color: '#e6ac00',
-                      '&.Mui-checked': {
-                        color: '#e6ac00',
-                      },
-                    }} />}
-                    label="Finance"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={categoryFilters.technology} onChange={handleCategoryChange} name="technology" sx={{
-                      color: '#e6ac00',
-                      '&.Mui-checked': {
-                        color: '#e6ac00',
-                      },
-                    }} />}
-                    label="Technology"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={categoryFilters.entertainment} onChange={handleCategoryChange} name="entertainment" sx={{
-                      color: '#e6ac00',
-                      '&.Mui-checked': {
-                        color: '#e6ac00',
-                      },
-                    }} />}
-                    label="Entertainment"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={categoryFilters.education} onChange={handleCategoryChange} name="education" sx={{
-                      color: '#e6ac00',
-                      '&.Mui-checked': {
-                        color: '#e6ac00',
-                      },
-                    }} />}
-                    label="Education"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={categoryFilters.health} onChange={handleCategoryChange} name="health" sx={{
-                      color: '#e6ac00',
-                      '&.Mui-checked': {
-                        color: '#e6ac00',
-                      },
-                    }} />}
-                    label="Health"
-                  />
-                </FormGroup>
+                <Autocomplete
+                  multiple
+                  options={categoriesList}
+                  getOptionLabel={(option) => option}
+                  value={selectedCategories}
+                  onChange={(event, newValue) => setSelectedCategories(newValue)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder="Search Categories"
+                      fullWidth // Ensure full width of the container
+                      sx={{
+                        '& .MuiInputBase-root': {
+                          minHeight: '56px', // Ensure the input field is always tall enough
+                        },
+                        '& .MuiInputBase-input': {
+                          whiteSpace: 'nowrap', // Prevent text from wrapping
+                        },
+                        '& .MuiOutlinedInput-root': {
+                          '& fieldset': {
+                            borderColor: '#ffbf00',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#d68910 ',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#d68910 ',
+                          }
+                        }
+
+                      }}
+                    />
+                  )}
+                  renderTags={() => null} // Don't render the tags here
+                />
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 1 }}>
+                  {selectedCategories.map((category, index) => (
+                    <Chip
+                      key={category}
+                      label={category}
+                      onDelete={() => {
+                        setSelectedCategories((prev) =>
+                          prev.filter((item) => item !== category)
+                        );
+                      }}
+                      sx={{
+                        backgroundColor: '#e6ac00',
+                        color: '#fff',
+                        margin: '2px',
+                        '& .MuiChip-deleteIcon': {
+                          color: '#fff',
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
                 <TextField
                   label="Max Participants"
                   fullWidth
