@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, CardActions, Button, TextField, IconButton, Paper, Drawer, Box, InputAdornment } from '@mui/material';
+import { Grid, Card, CardContent, Typography, CardActions, Button, TextField, IconButton, Paper, Drawer, Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { getRoom } from '../../api/room';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -9,7 +9,14 @@ function JoinRoom() {
   const [searchQuery, setSearchQuery] = useState(''); // For the search bar
   const [filteredRooms, setFilteredRooms] = useState([]); // For filtered rooms based on search and filter
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false); // Control filter drawer
-  const [categoryFilter, setCategoryFilter] = useState(''); // Example category filter
+  const [categoryFilters, setCategoryFilters] = useState({
+    sports: false,
+    finance: false,
+    technology: false,
+    entertainment: false,
+    education: false,
+    health: false,
+  }); // Example category filters
   const [participantsFilter, setParticipantsFilter] = useState(''); // Example participants filter
 
   useEffect(() => {
@@ -28,13 +35,22 @@ function JoinRoom() {
 
   useEffect(() => {
     // Filter rooms based on search query (room ID) and other filters
-    const filtered = rooms.filter(room =>
-      (!searchQuery || room.code.toString().includes(searchQuery)) && // Search by room code (room ID)
-      (!categoryFilter || room.category === categoryFilter) && // Display all rooms if categoryFilter is empty
-      (!participantsFilter || room.settings.roomSize <= participantsFilter) // Display all rooms if participantsFilter is empty
-    );
+    const filtered = rooms.filter(room => {
+      const matchesSearchQuery = !searchQuery || room.code.toString().includes(searchQuery);
+      const matchesParticipantsFilter = !participantsFilter || room.settings.roomSize <= participantsFilter;
+      const matchesCategoryFilter = Object.keys(categoryFilters).some(category => categoryFilters[category] && room.category === category);
+      
+      return matchesSearchQuery && matchesParticipantsFilter && (!Object.values(categoryFilters).some(v => v) || matchesCategoryFilter);
+    });
     setFilteredRooms(filtered);
-  }, [searchQuery, categoryFilter, participantsFilter, rooms]);
+  }, [searchQuery, categoryFilters, participantsFilter, rooms]);
+
+  const handleCategoryChange = (event) => {
+    setCategoryFilters({
+      ...categoryFilters,
+      [event.target.name]: event.target.checked,
+    });
+  };
 
   const toggleFilterDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -77,29 +93,62 @@ function JoinRoom() {
             >
               <Paper sx={{ padding: 2, width: 300 }}>
                 <Typography variant="h6">Filter Options</Typography>
-                <TextField
-                  label="Category"
-                  fullWidth
-                  margin="normal"
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  sx={{
-                    '& .MuiInputLabel-root.Mui-focused': {
-                      color: '#d68910',
-                    },
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: '#ffbf00',
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Checkbox checked={categoryFilters.sports} onChange={handleCategoryChange} name="sports" sx={{
+                      color: '#e6ac00',
+                      '&.Mui-checked': {
+                        color: '#e6ac00',
                       },
-                      '&:hover fieldset': {
-                        borderColor: '#d68910 ',
+                    }} />}
+                    label="Sports"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={categoryFilters.finance} onChange={handleCategoryChange} name="finance" sx={{
+                      color: '#e6ac00',
+                      '&.Mui-checked': {
+                        color: '#e6ac00',
                       },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#d68910 ',
-                      }
-                    }
-                  }}
-                />
+                    }} />}
+                    label="Finance"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={categoryFilters.technology} onChange={handleCategoryChange} name="technology" sx={{
+                      color: '#e6ac00',
+                      '&.Mui-checked': {
+                        color: '#e6ac00',
+                      },
+                    }} />}
+                    label="Technology"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={categoryFilters.entertainment} onChange={handleCategoryChange} name="entertainment" sx={{
+                      color: '#e6ac00',
+                      '&.Mui-checked': {
+                        color: '#e6ac00',
+                      },
+                    }} />}
+                    label="Entertainment"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={categoryFilters.education} onChange={handleCategoryChange} name="education" sx={{
+                      color: '#e6ac00',
+                      '&.Mui-checked': {
+                        color: '#e6ac00',
+                      },
+                    }} />}
+                    label="Education"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={categoryFilters.health} onChange={handleCategoryChange} name="health" sx={{
+                      color: '#e6ac00',
+                      '&.Mui-checked': {
+                        color: '#e6ac00',
+                      },
+                    }} />}
+                    label="Health"
+                  />
+                </FormGroup>
                 <TextField
                   label="Max Participants"
                   fullWidth
@@ -146,25 +195,46 @@ function JoinRoom() {
 
       <Grid container spacing={2} sx={{ padding: 2 }}>
         {filteredRooms.map(room => (
-          <Grid item xs={12} sm={6} md={4} key={room.code}>
-            <Card raised>
-              <CardContent>
-                <Typography variant="h5" component="div">
+          <Grid item xs={12} sm={6} md={3} lg={3} key={room.code}>
+            <Card
+              raised
+              sx={{
+                borderRadius: '10px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+                },
+              }}
+            >
+              <CardContent sx={{ textAlign: 'left', padding: '10px' }}>
+                <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
                   Room: {room.code}
                 </Typography>
-                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                <Typography sx={{ mb: 1, color: 'text.secondary', fontStyle: 'italic' }}>
                   Visibility: {room.settings.visibility === 1 ? 'Private' : 'Public'}
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body2" sx={{ marginBottom: '10px' }}>
                   Participants: {room.settings.roomSize}
                 </Typography>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{ justifyContent: 'right', paddingBottom: '8px' }}>
                 <Button
-                  size="small"
+                  variant="contained"
+                  sx={{
+                    borderRadius: '5px',
+                    textTransform: 'none',
+                    padding: '6px 16px',
+                    fontSize: '14px',
+                    backgroundColor: '#e6ac00',
+                    '&:hover': {
+                      backgroundColor: '#b38600',
+                    }
+                  }}
                   onClick={() => JoinRoom(room.id)} // Assuming you have a joinRoom function
                 >
-                  Join Room
+                  Join
                 </Button>
               </CardActions>
             </Card>
